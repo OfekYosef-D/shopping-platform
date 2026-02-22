@@ -22,6 +22,7 @@ export function getDb() {
 // Convenience alias — lazy-initialized on first access
 export const db = new Proxy({} as ReturnType<typeof createDb>, {
   get(_, prop) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (getDb() as any)[prop];
   },
 });
