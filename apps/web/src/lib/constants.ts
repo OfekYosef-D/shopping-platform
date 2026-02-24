@@ -1,5 +1,5 @@
-export const SITE_NAME = "Shopping Platform";
-export const SITE_DESCRIPTION = "A premium e-commerce experience.";
+export const SITE_NAME = "Mizronim";
+export const SITE_DESCRIPTION = "Refined shopping for a refined taste.";
 export const CURRENCY = "USD";
 
 export function formatPrice(priceInCents: number): string {

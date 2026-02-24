@@ -1,0 +1,84 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - navigation [ref=e2]:
+    - generic [ref=e3]:
+      - link "Mizronim" [ref=e4] [cursor=pointer]:
+        - /url: /
+      - generic [ref=e5]:
+        - link "Products" [ref=e6] [cursor=pointer]:
+          - /url: /products
+        - link "Cart" [ref=e7] [cursor=pointer]:
+          - /url: /cart
+          - img [ref=e8]
+          - text: Cart
+        - link "Sign In" [ref=e12] [cursor=pointer]:
+          - /url: /login
+        - link "Register" [ref=e13] [cursor=pointer]:
+          - /url: /register
+        - button "Toggle theme" [ref=e14]:
+          - img
+  - generic [ref=e16]:
+    - generic [ref=e17]:
+      - generic [ref=e18]:
+        - paragraph [ref=e19]: Premium Collection
+        - heading "Mizronim" [level=1] [ref=e20]
+        - paragraph [ref=e21]: Refined shopping for a refined taste. Curated products delivered to your door.
+        - generic [ref=e22]:
+          - link "Shop Now" [ref=e23] [cursor=pointer]:
+            - /url: /products
+            - button "Shop Now" [ref=e24]
+          - link "Learn More" [ref=e25] [cursor=pointer]:
+            - /url: "#features"
+            - button "Learn More" [ref=e26]
+      - img [ref=e28]
+    - generic [ref=e31]:
+      - paragraph [ref=e32]: Why Mizronim
+      - generic [ref=e33]:
+        - generic [ref=e34]:
+          - img [ref=e36]
+          - generic [ref=e41]:
+            - paragraph [ref=e42]: Free Shipping
+            - paragraph [ref=e43]: On all orders over $50. Fast, reliable delivery worldwide.
+        - generic [ref=e44]:
+          - img [ref=e46]
+          - generic [ref=e48]:
+            - paragraph [ref=e49]: Premium Quality
+            - paragraph [ref=e50]: Every product is handpicked and quality-verified before listing.
+        - generic [ref=e51]:
+          - img [ref=e53]
+          - generic [ref=e56]:
+            - paragraph [ref=e57]: Easy Returns
+            - paragraph [ref=e58]: 30-day hassle-free returns. No questions asked.
+  - contentinfo [ref=e59]:
+    - generic [ref=e60]:
+      - generic [ref=e61]:
+        - generic [ref=e62]:
+          - paragraph [ref=e63]: Mizronim
+          - paragraph [ref=e64]: Refined shopping for a refined taste.
+        - generic [ref=e65]:
+          - paragraph [ref=e66]: Shop
+          - list [ref=e67]:
+            - listitem [ref=e68]:
+              - link "Products" [ref=e69] [cursor=pointer]:
+                - /url: /products
+            - listitem [ref=e70]:
+              - link "Cart" [ref=e71] [cursor=pointer]:
+                - /url: /cart
+        - generic [ref=e72]:
+          - paragraph [ref=e73]: Account
+          - list [ref=e74]:
+            - listitem [ref=e75]:
+              - link "Sign In" [ref=e76] [cursor=pointer]:
+                - /url: /login
+            - listitem [ref=e77]:
+              - link "Dashboard" [ref=e78] [cursor=pointer]:
+                - /url: /dashboard
+      - generic [ref=e79]:
+        - paragraph [ref=e80]: © 2026 Mizronim. All rights reserved.
+        - paragraph [ref=e81]: Built with Next.js
+  - button "Open Next.js Dev Tools" [ref=e87] [cursor=pointer]:
+    - img [ref=e88]
+  - alert [ref=e91]
+```

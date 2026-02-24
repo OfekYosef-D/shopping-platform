@@ -3,6 +3,7 @@ import { formatPrice } from "@/lib/constants";
 import Image from "next/image";
 import Link from "next/link";
 import { AddToCartButton } from "./add-to-cart-button";
+import { GlassCard } from "@/components/ui/glass-card";
 
 interface ProductCardProps {
   id: string;
@@ -10,19 +11,25 @@ interface ProductCardProps {
   slug: string;
   priceInCents: number;
   imageUrl: string | null;
+  category?: string | null;
+  index?: number;
   className?: string;
 }
 
-export function ProductCard({ id, name, slug, priceInCents, imageUrl, className }: ProductCardProps) {
+export function ProductCard({ id, name, slug, priceInCents, imageUrl, category, index = 0, className }: ProductCardProps) {
   return (
-    <div
-      className={cn(
-        "group flex flex-col rounded-2xl border border-white/20 bg-white/10 p-4 backdrop-blur-lg shadow-xl transition-all hover:shadow-2xl dark:bg-black/20",
-        className
-      )}
+    <GlassCard
+      data-testid="product-card"
+      className={cn("group flex flex-col p-4 transition-all hover:shadow-2xl", className)}
+      style={{ animationDelay: `${index * 60}ms` }}
     >
       <Link href={`/products/${slug}`} className="block flex-1">
         <div className="relative aspect-square overflow-hidden rounded-xl bg-muted/50">
+          {category && (
+            <span className="absolute left-2 top-2 z-10 rounded-full border border-black/10 bg-black/5 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground backdrop-blur-sm dark:border-white/10 dark:bg-black/40">
+              {category}
+            </span>
+          )}
           {imageUrl ? (
             <Image
               src={imageUrl}
@@ -52,6 +59,6 @@ export function ProductCard({ id, name, slug, priceInCents, imageUrl, className 
         </div>
       </Link>
       <AddToCartButton productId={id} />
-    </div>
+    </GlassCard>
   );
 }

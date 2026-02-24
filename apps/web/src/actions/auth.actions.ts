@@ -1,26 +1,63 @@
 "use server";
 
-// Auth actions — placeholder for Supabase Auth integration
-// TODO: Implement with @supabase/supabase-js when Auth is set up
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+import { db } from "@/db";
+import { users } from "@/db/schema";
 
-export async function login(formData: FormData) {
+export type AuthState = { success: boolean; message: string } | null;
+
+export async function login(
+  _prevState: AuthState,
+  formData: FormData
+): Promise<AuthState> {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
 
-  // TODO: Implement Supabase Auth login
-  throw new Error("Not implemented");
+  const supabase = await createClient();
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+  if (error) {
+    return { success: false, message: error.message };
+  }
+
+  redirect("/products");
 }
 
-export async function register(formData: FormData) {
+export async function register(
+  _prevState: AuthState,
+  formData: FormData
+): Promise<AuthState> {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
   const name = formData.get("name") as string;
 
-  // TODO: Implement Supabase Auth registration
-  throw new Error("Not implemented");
+  if (!email || !password || !name) {
+    return { success: false, message: "All fields are required." };
+  }
+
+  const supabase = await createClient();
+  const { data, error } = await supabase.auth.signUp({ email, password });
+
+  if (error) {
+    return { success: false, message: error.message };
+  }
+
+  if (!data.user) {
+    return { success: false, message: "Registration failed. Please try again." };
+  }
+
+  // Create matching profile in public.users table
+  await db
+    .insert(users)
+    .values({ id: data.user.id, email, name })
+    .onConflictDoNothing();
+
+  redirect("/products");
 }
 
-export async function logout() {
-  // TODO: Implement Supabase Auth logout
-  throw new Error("Not implemented");
+export async function logout(): Promise<void> {
+  const supabase = await createClient();
+  await supabase.auth.signOut();
+  redirect("/");
 }

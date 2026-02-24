@@ -4,8 +4,9 @@ import { users } from "./users";
 export const orders = pgTable("orders", {
   id: uuid("id").defaultRandom().primaryKey(),
   userId: uuid("user_id").notNull().references(() => users.id),
-  status: text("status", { enum: ["pending", "processing", "shipped", "delivered", "cancelled"] }).notNull().default("pending"),
+  status: text("status", { enum: ["pending", "paid", "processing", "shipped", "delivered", "cancelled"] }).notNull().default("pending"),
   totalInCents: integer("total_in_cents").notNull(),
+  stripeSessionId: text("stripe_session_id").unique(),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 });

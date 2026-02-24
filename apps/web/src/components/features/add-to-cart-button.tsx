@@ -1,32 +1,41 @@
 "use client";
 
-import { useActionState, useOptimistic } from "react";
+import { useActionState, useOptimistic, useEffect, useRef } from "react";
 import { addToCart } from "@/actions/cart.actions";
 import { Button } from "@/components/ui/button";
 import { Loader2, Plus } from "lucide-react";
+import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface AddToCartButtonProps {
   productId: string;
-  // In a real app, we'd get the userId from auth context/session
-  userId?: string;
 }
 
-export function AddToCartButton({ productId, userId = "guest-user" }: AddToCartButtonProps) {
-  // Bind the server action with the required arguments
-  const boundAddToCart = addToCart.bind(null, userId, productId, 1);
-  
+export function AddToCartButton({ productId }: AddToCartButtonProps) {
+  const queryClient = useQueryClient();
+  const boundAddToCart = addToCart.bind(null, productId, 1);
+
   const [state, formAction, isPending] = useActionState(boundAddToCart, {
     success: false,
     message: "",
   });
 
-  // Optimistic UI state for the button
   const [optimisticState, addOptimistic] = useOptimistic(
     { isAdding: false },
-    (state, newIsAdding: boolean) => ({ isAdding: newIsAdding })
+    (_state, newIsAdding: boolean) => ({ isAdding: newIsAdding })
   );
 
   const isAdding = isPending || optimisticState.isAdding;
+
+  // Track previous state to detect a fresh success transition
+  const prevSuccessRef = useRef(false);
+  useEffect(() => {
+    if (state.success && !prevSuccessRef.current) {
+      toast.success("Added to cart!");
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
+    }
+    prevSuccessRef.current = state.success;
+  }, [state.success, queryClient]);
 
   return (
     <form
@@ -39,7 +48,7 @@ export function AddToCartButton({ productId, userId = "guest-user" }: AddToCartB
       <Button
         type="submit"
         disabled={isAdding}
-        className="w-full bg-white/10 text-foreground backdrop-blur-md border border-white/20 hover:bg-white/20 transition-all duration-300 shadow-sm"
+        className="w-full border border-black/10 bg-black/5 text-foreground backdrop-blur-md hover:bg-black/10 dark:border-white/20 dark:bg-white/10 dark:hover:bg-white/20 transition-all duration-300 shadow-sm"
       >
         {isAdding ? (
           <>

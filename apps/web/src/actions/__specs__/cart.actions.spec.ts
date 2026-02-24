@@ -25,6 +25,18 @@ vi.mock("@/db", () => ({
   },
 }));
 
+// Mock Supabase — always returns an authenticated user
+vi.mock("@/lib/supabase/server", () => ({
+  createClient: vi.fn().mockResolvedValue({
+    auth: {
+      getUser: vi.fn().mockResolvedValue({
+        data: { user: { id: "user-1" } },
+        error: null,
+      }),
+    },
+  }),
+}));
+
 describe("Cart Actions", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -37,7 +49,7 @@ describe("Cart Actions", () => {
     vi.mocked(db.insert).mockReturnValueOnce({ values: insertValuesMock } as unknown as ReturnType<typeof db.insert>);
 
     // Act
-    const result = await addToCart("user-1", "prod-1", 1, null, new FormData());
+    const result = await addToCart("prod-1", 1, null, new FormData());
 
     // Assert
     expect(db.query.cartItems.findFirst).toHaveBeenCalled();
@@ -61,7 +73,7 @@ describe("Cart Actions", () => {
     vi.mocked(db.update).mockReturnValueOnce({ set: updateSetMock } as unknown as ReturnType<typeof db.update>);
 
     // Act
-    const result = await addToCart("user-1", "prod-1", 1, null, new FormData());
+    const result = await addToCart("prod-1", 1, null, new FormData());
 
     // Assert
     expect(db.update).toHaveBeenCalled();
@@ -76,7 +88,7 @@ describe("Cart Actions", () => {
     vi.mocked(db.delete).mockReturnValueOnce({ where: deleteWhereMock } as unknown as ReturnType<typeof db.delete>);
 
     // Act
-    const result = await removeFromCart("user-1", "prod-1", null, new FormData());
+    const result = await removeFromCart("prod-1", new FormData());
 
     // Assert
     expect(db.delete).toHaveBeenCalled();
@@ -91,7 +103,7 @@ describe("Cart Actions", () => {
     vi.mocked(db.delete).mockReturnValueOnce({ where: deleteWhereMock } as unknown as ReturnType<typeof db.delete>);
 
     // Act
-    const result = await updateCartQuantity("item-1", 0, null, new FormData());
+    const result = await updateCartQuantity("item-1", 0, new FormData());
 
     // Assert
     expect(db.delete).toHaveBeenCalled();

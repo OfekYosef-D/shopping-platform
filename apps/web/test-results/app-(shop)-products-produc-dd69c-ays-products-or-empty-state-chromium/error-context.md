@@ -1,0 +1,60 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - navigation [ref=e2]:
+    - generic [ref=e3]:
+      - link "Mizronim" [ref=e4] [cursor=pointer]:
+        - /url: /
+      - generic [ref=e5]:
+        - link "Products" [ref=e6] [cursor=pointer]:
+          - /url: /products
+        - link "Cart" [ref=e7] [cursor=pointer]:
+          - /url: /cart
+          - img [ref=e8]
+          - text: Cart
+        - link "Sign In" [ref=e12] [cursor=pointer]:
+          - /url: /login
+        - link "Register" [ref=e13] [cursor=pointer]:
+          - /url: /register
+        - button "Toggle theme" [ref=e14]:
+          - img
+  - main [ref=e16]:
+    - generic [ref=e17]:
+      - paragraph [ref=e18]: Catalogue
+      - heading "Our Collection" [level=1] [ref=e19]
+      - paragraph [ref=e20]: Handpicked products for discerning taste.
+    - generic [ref=e21]:
+      - img [ref=e22]
+      - paragraph [ref=e26]: No products yet. Check back soon.
+  - contentinfo [ref=e27]:
+    - generic [ref=e28]:
+      - generic [ref=e29]:
+        - generic [ref=e30]:
+          - paragraph [ref=e31]: Mizronim
+          - paragraph [ref=e32]: Refined shopping for a refined taste.
+        - generic [ref=e33]:
+          - paragraph [ref=e34]: Shop
+          - list [ref=e35]:
+            - listitem [ref=e36]:
+              - link "Products" [ref=e37] [cursor=pointer]:
+                - /url: /products
+            - listitem [ref=e38]:
+              - link "Cart" [ref=e39] [cursor=pointer]:
+                - /url: /cart
+        - generic [ref=e40]:
+          - paragraph [ref=e41]: Account
+          - list [ref=e42]:
+            - listitem [ref=e43]:
+              - link "Sign In" [ref=e44] [cursor=pointer]:
+                - /url: /login
+            - listitem [ref=e45]:
+              - link "Dashboard" [ref=e46] [cursor=pointer]:
+                - /url: /dashboard
+      - generic [ref=e47]:
+        - paragraph [ref=e48]: © 2026 Mizronim. All rights reserved.
+        - paragraph [ref=e49]: Built with Next.js
+  - button "Open Next.js Dev Tools" [ref=e55] [cursor=pointer]:
+    - img [ref=e56]
+  - alert [ref=e59]
+```

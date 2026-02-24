@@ -4,17 +4,28 @@ import { db } from "@/db";
 import { cartItems } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { createClient } from "@/lib/supabase/server";
+
+async function getAuthenticatedUser() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  return user;
+}
 
 export async function addToCart(
-  userId: string,
   productId: string,
   quantity: number,
   _prevState: unknown,
   _formData: FormData
 ) {
   try {
+    const user = await getAuthenticatedUser();
+    if (!user) return { success: false, message: "Please sign in to add items to cart" };
+
     const existing = await db.query.cartItems.findFirst({
-      where: and(eq(cartItems.userId, userId), eq(cartItems.productId, productId)),
+      where: and(eq(cartItems.userId, user.id), eq(cartItems.productId, productId)),
     });
 
     if (existing) {
@@ -23,7 +34,7 @@ export async function addToCart(
         .set({ quantity: existing.quantity + quantity })
         .where(eq(cartItems.id, existing.id));
     } else {
-      await db.insert(cartItems).values({ userId, productId, quantity });
+      await db.insert(cartItems).values({ userId: user.id, productId, quantity });
     }
 
     revalidatePath("/cart");
@@ -35,15 +46,16 @@ export async function addToCart(
 }
 
 export async function removeFromCart(
-  userId: string,
   productId: string,
-  _prevState: unknown,
   _formData: FormData
 ) {
   try {
+    const user = await getAuthenticatedUser();
+    if (!user) return { success: false, message: "Please sign in" };
+
     await db
       .delete(cartItems)
-      .where(and(eq(cartItems.userId, userId), eq(cartItems.productId, productId)));
+      .where(and(eq(cartItems.userId, user.id), eq(cartItems.productId, productId)));
 
     revalidatePath("/cart");
     return { success: true, message: "Removed from cart" };
@@ -55,14 +67,21 @@ export async function removeFromCart(
 export async function updateCartQuantity(
   itemId: string,
   quantity: number,
-  _prevState: unknown,
   _formData: FormData
 ) {
   try {
+    const user = await getAuthenticatedUser();
+    if (!user) return { success: false, message: "Please sign in" };
+
     if (quantity <= 0) {
-      await db.delete(cartItems).where(eq(cartItems.id, itemId));
+      await db
+        .delete(cartItems)
+        .where(and(eq(cartItems.id, itemId), eq(cartItems.userId, user.id)));
     } else {
-      await db.update(cartItems).set({ quantity }).where(eq(cartItems.id, itemId));
+      await db
+        .update(cartItems)
+        .set({ quantity })
+        .where(and(eq(cartItems.id, itemId), eq(cartItems.userId, user.id)));
     }
 
     revalidatePath("/cart");
