@@ -50,12 +50,12 @@ describe("AddToCartButton", () => {
     vi.mocked(useOptimistic).mockReturnValue([{ isAdding: false }, vi.fn()]);
   });
 
-  it("renders 'Add to Cart' button in the idle state", () => {
+  it("renders Hebrew add-to-cart button in the idle state", () => {
     render(<AddToCartButton productId="prod-1" />);
 
     const button = screen.getByRole("button");
     expect(button).not.toBeDisabled();
-    expect(screen.getByText("Add to Cart")).toBeInTheDocument();
+    expect(screen.getByText("הוספה לסל")).toBeInTheDocument();
   });
 
   it("disables button and shows spinner when isPending is true", () => {
@@ -68,7 +68,7 @@ describe("AddToCartButton", () => {
     render(<AddToCartButton productId="prod-1" />);
 
     expect(screen.getByRole("button")).toBeDisabled();
-    expect(screen.getByText("Adding...")).toBeInTheDocument();
+    expect(screen.getByText("מוסיפים לסל...")).toBeInTheDocument();
   });
 
   it("disables button and shows spinner when optimistic isAdding is true", () => {
@@ -77,7 +77,7 @@ describe("AddToCartButton", () => {
     render(<AddToCartButton productId="prod-1" />);
 
     expect(screen.getByRole("button")).toBeDisabled();
-    expect(screen.getByText("Adding...")).toBeInTheDocument();
+    expect(screen.getByText("מוסיפים לסל...")).toBeInTheDocument();
   });
 
   it("shows error message when state.success is false and message is set", () => {

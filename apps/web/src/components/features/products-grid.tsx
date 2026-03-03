@@ -20,9 +20,14 @@ interface ProductsGridProps {
   products: Product[];
 }
 
+const ALL_CATEGORY = "הכול";
+
 export function ProductsGrid({ products }: ProductsGridProps) {
-  const categories = ["All", ...Array.from(new Set(products.map((p) => p.category).filter(Boolean) as string[]))];
-  const [active, setActive] = useState("All");
+  const categories = [
+    ALL_CATEGORY,
+    ...Array.from(new Set(products.map((p) => p.category).filter(Boolean) as string[])),
+  ];
+  const [active, setActive] = useState(ALL_CATEGORY);
   const [query, setQuery] = useState("");
 
   const q = query.trim().toLowerCase();
@@ -33,22 +38,20 @@ export function ProductsGrid({ products }: ProductsGridProps) {
           (p.description ?? "").toLowerCase().includes(q)
       )
     : products;
-  const filtered = active === "All" ? searchFiltered : searchFiltered.filter((p) => p.category === active);
+  const filtered = active === ALL_CATEGORY ? searchFiltered : searchFiltered.filter((p) => p.category === active);
 
   return (
     <div>
-      {/* Search input */}
       <div className="mb-6">
         <Input
           data-testid="search-input"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search products…"
+          placeholder="חפשו מזרן, כרית או כל מוצר אחר..."
           className="max-w-sm"
         />
       </div>
 
-      {/* Category filter tabs */}
       {categories.length > 1 && (
         <div className="mb-8 flex flex-wrap gap-2">
           {categories.map((cat) => (
@@ -56,7 +59,7 @@ export function ProductsGrid({ products }: ProductsGridProps) {
               key={cat}
               onClick={() => setActive(cat)}
               className={cn(
-                "rounded-full border px-4 py-1.5 text-xs font-semibold uppercase tracking-widest transition-colors",
+                "rounded-full border px-4 py-1.5 text-xs font-semibold transition-colors",
                 active === cat
                   ? "border-foreground bg-foreground text-background"
                   : "border-border/40 text-muted-foreground hover:border-foreground/40 hover:text-foreground"
@@ -68,7 +71,6 @@ export function ProductsGrid({ products }: ProductsGridProps) {
         </div>
       )}
 
-      {/* Grid */}
       {filtered.length > 0 ? (
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {filtered.map((product, i) => (
@@ -88,7 +90,7 @@ export function ProductsGrid({ products }: ProductsGridProps) {
         <div data-testid="empty-state" className="flex flex-col items-center justify-center gap-4 py-24 text-center">
           <Package className="h-10 w-10 text-muted-foreground/40" />
           <p className="text-muted-foreground">
-            {q ? "No products match your search." : "No products in this category yet."}
+            {q ? "לא נמצאו מוצרים שמתאימים לחיפוש שלך." : "כרגע אין מוצרים להצגה."}
           </p>
         </div>
       )}

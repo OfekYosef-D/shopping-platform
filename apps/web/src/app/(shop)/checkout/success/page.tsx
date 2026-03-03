@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { db } from "@/db";
 import { orders } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { Button } from "@/components/ui/button";
 import { GlassCard } from "@/components/ui/glass-card";
 import { Spotlight } from "@/components/ui/spotlight";
@@ -27,16 +27,14 @@ export default async function CheckoutSuccessPage({ searchParams }: Props) {
 
   if (!user) redirect("/login");
 
-  // Look up the order by Stripe session ID, scoped to the authenticated user
   const order = await db.query.orders.findFirst({
-    where: eq(orders.stripeSessionId, session_id),
+    where: and(eq(orders.stripeSessionId, session_id), eq(orders.userId, user.id)),
   });
 
-  if (!order || order.userId !== user.id) redirect("/products");
+  if (!order) redirect("/products");
 
   return (
-    <Spotlight className="flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center bg-dot-grid px-4 rounded-none">
-      {/* Background fade */}
+    <Spotlight className="flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center rounded-none bg-dot-grid px-4">
       <div className="pointer-events-none absolute inset-0 bg-linear-to-b from-background/80 via-background/50 to-background/80" />
 
       <GlassCard className="relative z-10 flex max-w-md flex-col items-center gap-6 text-center">
@@ -45,23 +43,19 @@ export default async function CheckoutSuccessPage({ searchParams }: Props) {
         </div>
 
         <div className="space-y-2">
-          <h1 className="font-display text-4xl font-normal tracking-tight">Order Confirmed!</h1>
-          <p className="text-muted-foreground">
-            Thanks for your purchase. Your order has been received and is being processed.
-          </p>
+          <h1 className="font-display text-4xl font-normal tracking-tight">התשלום בוצע בהצלחה</h1>
+          <p className="text-muted-foreground">תודה על ההזמנה. אישור יישלח אליכם בדוא״ל בתוך כמה דקות.</p>
         </div>
 
-        <p className="font-mono text-xs text-muted-foreground">
-          Order #{order.id.slice(0, 8)}…
-        </p>
+        <p className="font-mono text-xs text-muted-foreground">מספר הזמנה: #{order.id.slice(0, 8)}</p>
 
         <div className="flex w-full flex-col gap-2 sm:flex-row">
           <Link href="/dashboard" className="flex-1">
-            <Button className="w-full rounded-full">View Dashboard</Button>
+            <Button className="w-full rounded-full">למעקב אחרי הזמנות</Button>
           </Link>
           <Link href="/products" className="flex-1">
             <Button variant="outline" className="w-full rounded-full">
-              Continue Shopping
+              המשך קנייה
             </Button>
           </Link>
         </div>

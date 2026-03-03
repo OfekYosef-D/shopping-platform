@@ -1,14 +1,11 @@
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
+import { env } from "@/lib/env/server";
 import * as schema from "./schema";
 
 function createDb() {
-  const connectionString = process.env.DATABASE_URL;
-  if (!connectionString) {
-    throw new Error("DATABASE_URL is not set");
-  }
   // Disable prefetch for Supabase Transaction pool mode
-  const client = postgres(connectionString, { prepare: false });
+  const client = postgres(env.DATABASE_URL, { prepare: false });
   return drizzle({ client, schema });
 }
 

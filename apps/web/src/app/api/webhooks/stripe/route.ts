@@ -3,8 +3,9 @@ import Stripe from "stripe";
 import { db } from "@/db";
 import { orders, cartItems, orderItems, products } from "@/db/schema";
 import { eq, sql } from "drizzle-orm";
+import { env } from "@/lib/env/server";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+const stripe = new Stripe(env.STRIPE_SECRET_KEY, {
   apiVersion: "2026-01-28.clover",
 });
 
@@ -19,40 +20,42 @@ export async function POST(request: Request) {
   let event: Stripe.Event;
 
   try {
-    event = stripe.webhooks.constructEvent(
-      body,
-      sig,
-      process.env.STRIPE_WEBHOOK_SECRET!
-    );
+    event = stripe.webhooks.constructEvent(body, sig, env.STRIPE_WEBHOOK_SECRET);
   } catch (err) {
     const message = err instanceof Error ? err.message : "Webhook signature verification failed";
     return NextResponse.json({ error: message }, { status: 400 });
   }
 
-  if (event.type === "checkout.session.completed") {
-    const session = event.data.object as Stripe.Checkout.Session;
-    const userId = session.metadata?.userId;
+  if (event.type !== "checkout.session.completed") {
+    return NextResponse.json({ received: true });
+  }
 
-    if (!userId) {
-      return NextResponse.json({ error: "Missing userId in session metadata" }, { status: 400 });
+  const session = event.data.object as Stripe.Checkout.Session;
+
+  await db.transaction(async (tx) => {
+    const [order] = await tx
+      .select({ id: orders.id, userId: orders.userId, status: orders.status })
+      .from(orders)
+      .where(eq(orders.stripeSessionId, session.id))
+      .limit(1);
+
+    if (!order) {
+      return;
     }
 
-    // Mark the order as paid and retrieve its ID
-    const [updatedOrder] = await db
-      .update(orders)
-      .set({ status: "paid", updatedAt: new Date() })
-      .where(eq(orders.stripeSessionId, session.id))
-      .returning({ id: orders.id });
+    if (order.status !== "paid") {
+      await tx
+        .update(orders)
+        .set({ status: "paid", updatedAt: new Date() })
+        .where(eq(orders.id, order.id));
 
-    if (updatedOrder) {
-      // Decrement stock for each purchased item (floor at 0 to avoid negatives)
-      const purchased = await db
+      const purchased = await tx
         .select({ productId: orderItems.productId, quantity: orderItems.quantity })
         .from(orderItems)
-        .where(eq(orderItems.orderId, updatedOrder.id));
+        .where(eq(orderItems.orderId, order.id));
 
       for (const item of purchased) {
-        await db
+        await tx
           .update(products)
           .set({
             stock: sql`GREATEST(${products.stock} - ${item.quantity}, 0)`,
@@ -61,9 +64,8 @@ export async function POST(request: Request) {
       }
     }
 
-    // Clear the user's cart
-    await db.delete(cartItems).where(eq(cartItems.userId, userId));
-  }
+    await tx.delete(cartItems).where(eq(cartItems.userId, order.userId));
+  });
 
   return NextResponse.json({ received: true });
 }

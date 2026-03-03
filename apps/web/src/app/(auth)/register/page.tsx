@@ -8,26 +8,26 @@ import { GlassCard } from "@/components/ui/glass-card";
 import { Spotlight } from "@/components/ui/spotlight";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
+import { SITE_NAME } from "@/lib/constants";
 
 export default function RegisterPage() {
   const [state, formAction, isPending] = useActionState(register, null);
 
   return (
-    <Spotlight className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-dot-grid px-4 rounded-none">
-      {/* Background fade */}
+    <Spotlight className="flex min-h-[calc(100vh-4rem)] items-center justify-center rounded-none bg-dot-grid px-4">
       <div className="pointer-events-none absolute inset-0 bg-linear-to-b from-background/80 via-background/50 to-background/80" />
 
       <GlassCard className="relative z-10 w-full max-w-sm space-y-6">
-        {/* Brand */}
         <div className="space-y-1 text-center">
-          <p className="font-display text-3xl tracking-tight">Mizronim</p>
-          <p className="text-sm text-muted-foreground">Create your account</p>
+          <p className="font-display text-3xl tracking-tight">{SITE_NAME}</p>
+          <h1 className="text-xl font-semibold tracking-tight">פתיחת חשבון</h1>
+          <p className="text-sm text-muted-foreground">יצירת חשבון חדש לקנייה מהירה</p>
         </div>
 
         <form action={formAction} className="space-y-4">
           <div className="space-y-2">
             <label htmlFor="name" className="text-sm font-medium">
-              Full Name
+              שם מלא
             </label>
             <Input
               id="name"
@@ -35,13 +35,13 @@ export default function RegisterPage() {
               type="text"
               autoComplete="name"
               required
-              placeholder="Jane Doe"
+              placeholder="ישראל ישראלי"
             />
           </div>
 
           <div className="space-y-2">
             <label htmlFor="email" className="text-sm font-medium">
-              Email
+              אימייל
             </label>
             <Input
               id="email"
@@ -49,13 +49,13 @@ export default function RegisterPage() {
               type="email"
               autoComplete="email"
               required
-              placeholder="you@example.com"
+              placeholder="name@example.com"
             />
           </div>
 
           <div className="space-y-2">
             <label htmlFor="password" className="text-sm font-medium">
-              Password
+              סיסמה
             </label>
             <Input
               id="password"
@@ -64,30 +64,28 @@ export default function RegisterPage() {
               autoComplete="new-password"
               required
               minLength={6}
-              placeholder="••••••••"
+              placeholder="********"
             />
           </div>
 
-          {state && !state.success && (
-            <p className="text-destructive text-sm">{state.message}</p>
-          )}
+          {state && !state.success && <p className="text-sm text-destructive">{state.message}</p>}
 
           <Button type="submit" className="w-full rounded-full" disabled={isPending}>
             {isPending ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Creating account…
+                יוצרים חשבון...
               </>
             ) : (
-              "Create Account"
+              "יצירת חשבון"
             )}
           </Button>
         </form>
 
         <p className="text-center text-sm text-muted-foreground">
-          Already have an account?{" "}
+          כבר יש לך חשבון?{" "}
           <Link href="/login" className="text-foreground underline-offset-4 hover:underline">
-            Sign In
+            להתחברות
           </Link>
         </p>
       </GlassCard>

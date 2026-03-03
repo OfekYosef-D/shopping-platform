@@ -5,8 +5,9 @@ import { db } from "@/db";
 import { cartItems, products, orders, orderItems } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { createClient } from "@/lib/supabase/server";
+import { env } from "@/lib/env/server";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+const stripe = new Stripe(env.STRIPE_SECRET_KEY, {
   apiVersion: "2026-01-28.clover",
 });
 
@@ -15,7 +16,7 @@ export async function createCheckoutSession(): Promise<string> {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) throw new Error("Unauthorized");
+  if (!user) throw new Error("יש להתחבר כדי להמשיך לתשלום.");
 
   // Load cart items joined with product data
   const items = await db
@@ -32,12 +33,12 @@ export async function createCheckoutSession(): Promise<string> {
     .innerJoin(products, eq(cartItems.productId, products.id))
     .where(eq(cartItems.userId, user.id));
 
-  if (items.length === 0) throw new Error("Your cart is empty.");
+  if (items.length === 0) throw new Error("הסל שלך ריק.");
 
   // Validate stock availability
   for (const item of items) {
     if (item.stock < item.quantity) {
-      throw new Error(`"${item.name}" only has ${item.stock} units available.`);
+      throw new Error(`"${item.name}" זמין כרגע בכמות של ${item.stock} יחידות בלבד.`);
     }
   }
 
@@ -46,13 +47,13 @@ export async function createCheckoutSession(): Promise<string> {
     0
   );
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+  const siteUrl = env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
   const session = await stripe.checkout.sessions.create({
     mode: "payment",
     line_items: items.map((item) => ({
       price_data: {
-        currency: "usd",
+        currency: "ils",
         product_data: {
           name: item.name,
           ...(item.imageUrl ? { images: [item.imageUrl] } : {}),
@@ -77,6 +78,7 @@ export async function createCheckoutSession(): Promise<string> {
         stripeSessionId: session.id,
       })
       .returning({ id: orders.id });
+    if (!newOrder) throw new Error("לא הצלחנו ליצור הזמנה. נסו שוב.");
 
     await tx.insert(orderItems).values(
       items.map((item) => ({

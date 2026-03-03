@@ -26,8 +26,6 @@ export function CartItemRow({
   imageUrl,
   quantity,
 }: CartItemRowProps) {
-  // Cast needed: React form action expects (fd) => void, but our server actions
-  // return { success, message } — React ignores the return value at runtime.
   type FormAction = (formData: FormData) => void;
   const decrementAction = updateCartQuantity.bind(null, id, quantity - 1) as unknown as FormAction;
   const incrementAction = updateCartQuantity.bind(null, id, quantity + 1) as unknown as FormAction;
@@ -35,54 +33,41 @@ export function CartItemRow({
 
   return (
     <div className="flex items-center gap-4 p-4">
-      {/* Thumbnail */}
-      <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg bg-muted/50">
+      <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg bg-muted/50">
         {imageUrl ? (
           <Image src={imageUrl} alt={name} fill className="object-cover" />
         ) : (
           <div className="flex h-full w-full items-center justify-center text-xs text-muted-foreground">
-            No Image
+            ללא תמונה
           </div>
         )}
       </div>
 
-      {/* Name & price */}
-      <div className="flex-1 min-w-0">
-        <Link
-          href={`/products/${slug}`}
-          className="font-medium truncate hover:underline block"
-        >
+      <div className="min-w-0 flex-1">
+        <Link href={`/products/${slug}`} className="block truncate font-medium hover:underline">
           {name}
         </Link>
         <p className="text-sm text-muted-foreground">{formatPrice(priceInCents)}</p>
       </div>
 
-      {/* Quantity controls */}
       <div className="flex items-center gap-2">
         <form action={decrementAction}>
-          <Button type="submit" variant="outline" size="icon" className="h-8 w-8">
+          <Button type="submit" variant="outline" size="icon" className="h-8 w-8" aria-label="הפחתת כמות">
             <Minus className="h-3 w-3" />
           </Button>
         </form>
-        <span
-          data-testid="quantity"
-          className="text-sm font-medium w-6 text-center"
-        >
+        <span data-testid="quantity" className="w-6 text-center text-sm font-medium">
           {quantity}
         </span>
         <form action={incrementAction}>
-          <Button type="submit" variant="outline" size="icon" className="h-8 w-8">
+          <Button type="submit" variant="outline" size="icon" className="h-8 w-8" aria-label="הגדלת כמות">
             <Plus className="h-3 w-3" />
           </Button>
         </form>
       </div>
 
-      {/* Subtotal */}
-      <p className="font-semibold w-20 text-right">
-        {formatPrice(priceInCents * quantity)}
-      </p>
+      <p className="w-20 text-left font-semibold">{formatPrice(priceInCents * quantity)}</p>
 
-      {/* Remove */}
       <form action={removeAction}>
         <Button
           type="submit"
@@ -90,6 +75,7 @@ export function CartItemRow({
           size="icon"
           className="h-8 w-8 text-destructive"
           data-testid="remove-button"
+          aria-label="הסרת מוצר"
         >
           <Trash2 className="h-4 w-4" />
         </Button>

@@ -8,6 +8,7 @@ import { CartTriggerButton } from "./cart-trigger-button";
 import { db } from "@/db";
 import { cartItems } from "@/db/schema";
 import { eq, count } from "drizzle-orm";
+import { SITE_NAME } from "@/lib/constants";
 
 export async function Navbar() {
   const supabase = await createClient();
@@ -28,50 +29,35 @@ export async function Navbar() {
     <>
       <nav className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl supports-backdrop-filter:bg-background/60">
         <div className="container mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
-          {/* Wordmark */}
-          <Link
-            href="/"
-            className="font-display text-2xl tracking-tight hover:opacity-80 transition-opacity"
-          >
-            Mizronim
+          <Link href="/" className="font-display text-2xl tracking-tight transition-opacity hover:opacity-80">
+            {SITE_NAME}
           </Link>
 
-          {/* Desktop nav */}
           <div className="hidden items-center gap-6 md:flex">
-            <Link
-              href="/products"
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Products
+            <Link href="/products" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
+              מוצרים
             </Link>
             <CartTriggerButton initialCount={cartCount} />
             {user ? (
               <>
-                <span className="text-sm text-muted-foreground hidden lg:block truncate max-w-40">
+                <span className="hidden max-w-40 truncate text-sm text-muted-foreground lg:block">
                   {user.email}
                 </span>
                 <LogoutButton />
               </>
             ) : (
               <>
-                <Link
-                  href="/login"
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  Sign In
+                <Link href="/login" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
+                  התחברות
                 </Link>
-                <Link
-                  href="/register"
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  Register
+                <Link href="/register" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
+                  הרשמה
                 </Link>
               </>
             )}
             <ThemeToggle />
           </div>
 
-          {/* Mobile: theme toggle + hamburger */}
           <div className="flex items-center gap-1 md:hidden">
             <ThemeToggle />
             <MobileMenuButton />
@@ -79,7 +65,6 @@ export async function Navbar() {
         </div>
       </nav>
 
-      {/* Mobile drawer — rendered outside nav so it can overlay everything */}
       <MobileMenu user={user} initialCount={cartCount} />
     </>
   );

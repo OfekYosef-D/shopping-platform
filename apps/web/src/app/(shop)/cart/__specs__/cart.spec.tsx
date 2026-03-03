@@ -20,9 +20,9 @@ const mockItem = {
 describe("Cart Page", () => {
   it("should render empty cart state", () => {
     render(
-      <p className="text-muted-foreground">Your cart is empty.</p>
+      <p className="text-muted-foreground">הסל שלך עדיין ריק.</p>
     );
-    expect(screen.getByText("Your cart is empty.")).toBeInTheDocument();
+    expect(screen.getByText("הסל שלך עדיין ריק.")).toBeInTheDocument();
   });
 
   it("should list cart items with quantities", () => {
@@ -33,8 +33,8 @@ describe("Cart Page", () => {
 
   it("should update total when quantity changes", () => {
     render(<CartItemRow {...mockItem} />);
-    // Subtotal = 2 * $29.99 = $59.98
-    expect(screen.getByText("$59.98")).toBeInTheDocument();
+    const subtotal = screen.getByText((content) => content.includes("59.98"));
+    expect(subtotal.textContent).toContain("₪");
   });
 
   it("should remove item from cart", () => {

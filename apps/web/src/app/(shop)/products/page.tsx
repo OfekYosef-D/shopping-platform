@@ -10,19 +10,16 @@ export default async function ProductsPage() {
 
   return (
     <main className="container mx-auto max-w-7xl px-4 py-12">
-      {/* Page header */}
       <div className="mb-10 space-y-2">
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">Catalogue</p>
-        <h1 className="font-display text-5xl font-normal tracking-tight sm:text-6xl">
-          Our Collection
-        </h1>
-        <p className="text-muted-foreground">Handpicked products for discerning taste.</p>
+        <p className="text-xs font-semibold tracking-[0.3em] text-muted-foreground">קטלוג שינה</p>
+        <h1 className="font-display text-5xl font-normal tracking-tight sm:text-6xl">מזרונים, כריות ועוד</h1>
+        <p className="text-muted-foreground">בחרו את המוצרים שיעזרו לכם לישון טוב יותר בכל לילה.</p>
       </div>
 
       {allProducts.length === 0 ? (
         <div className="flex flex-col items-center justify-center gap-4 py-32 text-center">
           <Package className="h-12 w-12 text-muted-foreground/40" />
-          <p className="text-muted-foreground">No products yet. Check back soon.</p>
+          <p className="text-muted-foreground">אין כרגע מוצרים במלאי. נעדכן בקרוב.</p>
         </div>
       ) : (
         <ProductsGrid products={allProducts} />

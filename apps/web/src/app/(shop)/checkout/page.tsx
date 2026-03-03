@@ -20,7 +20,7 @@ export default async function CheckoutPage() {
   try {
     stripeUrl = await createCheckoutSession();
   } catch (err) {
-    errorMessage = err instanceof Error ? err.message : "Failed to start checkout.";
+    errorMessage = err instanceof Error ? err.message : "לא ניתן להתחיל את תהליך התשלום.";
   }
 
   // redirect() must be outside the try/catch block
@@ -28,10 +28,10 @@ export default async function CheckoutPage() {
 
   return (
     <main className="container mx-auto px-4 py-12 max-w-3xl">
-      <h1 className="text-3xl font-bold tracking-tight mb-8">Checkout</h1>
-      <p className="text-destructive mb-6">{errorMessage ?? "Something went wrong."}</p>
+      <h1 className="mb-8 text-3xl font-bold tracking-tight">תשלום</h1>
+      <p className="mb-6 text-destructive">{errorMessage ?? "אירעה תקלה לא צפויה."}</p>
       <Link href="/cart">
-        <Button variant="outline">Back to Cart</Button>
+        <Button variant="outline">חזרה לסל</Button>
       </Link>
     </main>
   );
