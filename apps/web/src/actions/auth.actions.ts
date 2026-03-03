@@ -33,7 +33,7 @@ export async function register(
   const name = formData.get("name") as string;
 
   if (!email || !password || !name) {
-    return { success: false, message: "All fields are required." };
+    return { success: false, message: "יש למלא את כל השדות." };
   }
 
   const supabase = await createClient();
@@ -44,7 +44,7 @@ export async function register(
   }
 
   if (!data.user) {
-    return { success: false, message: "Registration failed. Please try again." };
+    return { success: false, message: "ההרשמה נכשלה. נסו שוב." };
   }
 
   // Create matching profile in public.users table

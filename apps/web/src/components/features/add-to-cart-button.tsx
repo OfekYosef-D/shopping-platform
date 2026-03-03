@@ -31,7 +31,7 @@ export function AddToCartButton({ productId }: AddToCartButtonProps) {
   const prevSuccessRef = useRef(false);
   useEffect(() => {
     if (state.success && !prevSuccessRef.current) {
-      toast.success("Added to cart!");
+      toast.success("המוצר נוסף לסל");
       queryClient.invalidateQueries({ queryKey: ["cart"] });
     }
     prevSuccessRef.current = state.success;
@@ -53,12 +53,12 @@ export function AddToCartButton({ productId }: AddToCartButtonProps) {
         {isAdding ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Adding...
+            מוסיפים לסל...
           </>
         ) : (
           <>
             <Plus className="mr-2 h-4 w-4" />
-            Add to Cart
+            הוספה לסל
           </>
         )}
       </Button>

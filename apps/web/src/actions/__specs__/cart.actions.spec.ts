@@ -56,7 +56,7 @@ describe("Cart Actions", () => {
     expect(db.insert).toHaveBeenCalled();
     expect(insertValuesMock).toHaveBeenCalledWith({ userId: "user-1", productId: "prod-1", quantity: 1 });
     expect(revalidatePath).toHaveBeenCalledWith("/cart");
-    expect(result).toEqual({ success: true, message: "Added to cart" });
+    expect(result).toEqual({ success: true, message: "המוצר נוסף לסל." });
   });
 
   it("should increment quantity for existing cart item", async () => {
@@ -79,7 +79,7 @@ describe("Cart Actions", () => {
     expect(db.update).toHaveBeenCalled();
     expect(updateSetMock).toHaveBeenCalledWith({ quantity: 3 });
     expect(revalidatePath).toHaveBeenCalledWith("/cart");
-    expect(result).toEqual({ success: true, message: "Cart updated" });
+    expect(result).toEqual({ success: true, message: "הסל עודכן." });
   });
 
   it("should remove item from cart", async () => {
@@ -94,7 +94,7 @@ describe("Cart Actions", () => {
     expect(db.delete).toHaveBeenCalled();
     expect(deleteWhereMock).toHaveBeenCalled();
     expect(revalidatePath).toHaveBeenCalledWith("/cart");
-    expect(result).toEqual({ success: true, message: "Removed from cart" });
+    expect(result).toEqual({ success: true, message: "המוצר הוסר מהסל." });
   });
 
   it("should update quantity and remove when quantity <= 0", async () => {
@@ -109,6 +109,6 @@ describe("Cart Actions", () => {
     expect(db.delete).toHaveBeenCalled();
     expect(deleteWhereMock).toHaveBeenCalled();
     expect(revalidatePath).toHaveBeenCalledWith("/cart");
-    expect(result).toEqual({ success: true, message: "Item removed" });
+    expect(result).toEqual({ success: true, message: "המוצר הוסר מהסל." });
   });
 });

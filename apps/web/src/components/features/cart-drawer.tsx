@@ -13,6 +13,7 @@ import { formatPrice } from "@/lib/constants";
 export function CartDrawer() {
   const { isCartOpen, closeCart } = useUIStore();
   const { data, isLoading } = useCartQuery();
+  type FormAction = (formData: FormData) => void | Promise<void>;
 
   const items = data?.items ?? [];
   const total = data?.total ?? 0;
@@ -21,7 +22,6 @@ export function CartDrawer() {
     <AnimatePresence>
       {isCartOpen && (
         <>
-          {/* Backdrop */}
           <motion.div
             key="cart-overlay"
             initial={{ opacity: 0 }}
@@ -34,23 +34,21 @@ export function CartDrawer() {
             data-testid="cart-overlay"
           />
 
-          {/* Drawer panel */}
           <motion.div
             key="cart-panel"
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="fixed inset-y-0 right-0 z-50 flex w-full max-w-sm flex-col border-l border-border/40 bg-background/95 backdrop-blur-xl shadow-2xl"
+            className="fixed inset-y-0 right-0 z-50 flex w-full max-w-sm flex-col border-l border-border/40 bg-background/95 shadow-2xl backdrop-blur-xl"
             data-testid="cart-drawer"
           >
-            {/* Header */}
             <div className="flex h-16 items-center justify-between border-b border-border/40 px-6">
               <div className="flex items-center gap-2">
                 <ShoppingCart className="h-5 w-5" />
-                <span className="font-semibold tracking-tight">Your Cart</span>
+                <span className="font-semibold tracking-tight">סל קניות</span>
                 {items.length > 0 && (
-                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground text-[10px] font-bold">
+                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
                     {items.length}
                   </span>
                 )}
@@ -60,14 +58,13 @@ export function CartDrawer() {
                 size="icon"
                 className="h-9 w-9"
                 onClick={closeCart}
-                aria-label="Close cart"
+                aria-label="סגירת סל קניות"
                 data-testid="cart-close"
               >
                 <X className="h-4 w-4" />
               </Button>
             </div>
 
-            {/* Body */}
             <div className="flex-1 overflow-y-auto px-4 py-4">
               {isLoading ? (
                 <div className="space-y-4" aria-busy="true" data-testid="cart-loading">
@@ -87,7 +84,7 @@ export function CartDrawer() {
                   data-testid="cart-empty"
                 >
                   <Package className="h-12 w-12 text-muted-foreground/40" />
-                  <p className="text-sm text-muted-foreground">Your cart is empty</p>
+                  <p className="text-sm text-muted-foreground">הסל שלך עדיין ריק.</p>
                   <Button
                     variant="outline"
                     size="sm"
@@ -95,7 +92,7 @@ export function CartDrawer() {
                     onClick={closeCart}
                     asChild
                   >
-                    <Link href="/products">Browse Products</Link>
+                    <Link href="/products">לצפייה במוצרים</Link>
                   </Button>
                 </div>
               ) : (
@@ -109,126 +106,111 @@ export function CartDrawer() {
                       slug: string;
                       priceInCents: number;
                       imageUrl: string | null;
-                    }) => (
-                      <li
-                        key={item.id}
-                        className="flex gap-3 rounded-xl border border-border/30 p-3"
-                      >
-                        {/* Thumbnail */}
-                        <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-muted">
-                          {item.imageUrl ? (
-                            <Image
-                              src={item.imageUrl}
-                              alt={item.name}
-                              fill
-                              sizes="64px"
-                              className="object-cover"
-                            />
-                          ) : (
-                            <div className="flex h-full w-full items-center justify-center text-[10px] text-muted-foreground">
-                              No Image
-                            </div>
-                          )}
-                        </div>
+                    }) => {
+                      const decrementAction = updateCartQuantity.bind(
+                        null,
+                        item.id,
+                        item.quantity - 1
+                      ) as unknown as FormAction;
+                      const incrementAction = updateCartQuantity.bind(
+                        null,
+                        item.id,
+                        item.quantity + 1
+                      ) as unknown as FormAction;
+                      const removeAction = removeFromCart.bind(
+                        null,
+                        item.productId
+                      ) as unknown as FormAction;
+                      return (
+                        <li key={item.id} className="flex gap-3 rounded-xl border border-border/30 p-3">
+                          <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-muted">
+                            {item.imageUrl ? (
+                              <Image
+                                src={item.imageUrl}
+                                alt={item.name}
+                                fill
+                                sizes="64px"
+                                className="object-cover"
+                              />
+                            ) : (
+                              <div className="flex h-full w-full items-center justify-center text-[10px] text-muted-foreground">
+                                ללא תמונה
+                              </div>
+                            )}
+                          </div>
 
-                        {/* Details */}
-                        <div className="flex min-w-0 flex-1 flex-col gap-1.5">
-                          <Link
-                            href={`/products/${item.slug}`}
-                            className="truncate text-sm font-medium hover:underline"
-                            onClick={closeCart}
-                          >
-                            {item.name}
-                          </Link>
-                          <span className="text-xs text-muted-foreground">
-                            {formatPrice(item.priceInCents)} each
-                          </span>
-
-                          {/* Quantity controls + remove */}
-                          <div className="flex items-center gap-2">
-                            <form
-                              action={updateCartQuantity.bind(
-                                null,
-                                item.id,
-                                item.quantity - 1
-                              )}
+                          <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+                            <Link
+                              href={`/products/${item.slug}`}
+                              className="block truncate text-sm font-medium hover:underline"
+                              onClick={closeCart}
                             >
-                              <button
-                                type="submit"
-                                className="flex h-6 w-6 items-center justify-center rounded-full border border-border/40 transition-colors hover:bg-muted"
-                                aria-label="Decrease quantity"
-                              >
-                                <Minus className="h-3 w-3" />
-                              </button>
-                            </form>
-
-                            <span
-                              className="min-w-[1.5rem] text-center text-sm font-medium tabular-nums"
-                              data-testid="drawer-quantity"
-                            >
-                              {item.quantity}
+                              {item.name}
+                            </Link>
+                            <span className="text-xs text-muted-foreground">
+                              {formatPrice(item.priceInCents)} ליחידה
                             </span>
 
-                            <form
-                              action={updateCartQuantity.bind(
-                                null,
-                                item.id,
-                                item.quantity + 1
-                              )}
-                            >
-                              <button
-                                type="submit"
-                                className="flex h-6 w-6 items-center justify-center rounded-full border border-border/40 transition-colors hover:bg-muted"
-                                aria-label="Increase quantity"
-                              >
-                                <Plus className="h-3 w-3" />
-                              </button>
-                            </form>
+                            <div className="flex items-center gap-2">
+                              <form action={decrementAction}>
+                                <button
+                                  type="submit"
+                                  className="flex h-6 w-6 items-center justify-center rounded-full border border-border/40 transition-colors hover:bg-muted"
+                                  aria-label="הפחתת כמות"
+                                >
+                                  <Minus className="h-3 w-3" />
+                                </button>
+                              </form>
 
-                            <form
-                              action={removeFromCart.bind(null, item.productId)}
-                              className="ml-auto"
-                            >
-                              <button
-                                type="submit"
-                                className="text-xs text-muted-foreground transition-colors hover:text-destructive"
-                                data-testid="drawer-remove"
-                              >
-                                Remove
-                              </button>
-                            </form>
+                              <span className="min-w-[1.5rem] text-center text-sm font-medium tabular-nums" data-testid="drawer-quantity">
+                                {item.quantity}
+                              </span>
+
+                              <form action={incrementAction}>
+                                <button
+                                  type="submit"
+                                  className="flex h-6 w-6 items-center justify-center rounded-full border border-border/40 transition-colors hover:bg-muted"
+                                  aria-label="הגדלת כמות"
+                                >
+                                  <Plus className="h-3 w-3" />
+                                </button>
+                              </form>
+
+                              <form action={removeAction} className="ms-auto">
+                                <button
+                                  type="submit"
+                                  className="text-xs text-muted-foreground transition-colors hover:text-destructive"
+                                  data-testid="drawer-remove"
+                                >
+                                  הסר
+                                </button>
+                              </form>
+                            </div>
                           </div>
-                        </div>
 
-                        {/* Line subtotal */}
-                        <span className="shrink-0 text-sm font-semibold tabular-nums">
-                          {formatPrice(item.priceInCents * item.quantity)}
-                        </span>
-                      </li>
-                    )
+                          <span className="shrink-0 text-sm font-semibold tabular-nums">
+                            {formatPrice(item.priceInCents * item.quantity)}
+                          </span>
+                        </li>
+                      );
+                    }
                   )}
                 </ul>
               )}
             </div>
 
-            {/* Sticky footer */}
             {items.length > 0 && (
               <div className="space-y-3 border-t border-border/40 px-6 py-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Subtotal</span>
+                  <span className="text-sm text-muted-foreground">סכום ביניים</span>
                   <span className="font-semibold tabular-nums">{formatPrice(total)}</span>
                 </div>
                 <div className="flex flex-col gap-2">
                   <Button className="w-full rounded-full" asChild onClick={closeCart}>
-                    <Link href="/checkout">Checkout</Link>
+                    <Link href="/checkout">לתשלום</Link>
                   </Button>
-                  <Button
-                    variant="outline"
-                    className="w-full rounded-full"
-                    asChild
-                    onClick={closeCart}
-                  >
-                    <Link href="/cart">View Full Cart</Link>
+                  <Button variant="outline" className="w-full rounded-full" asChild onClick={closeCart}>
+                    <Link href="/cart">לסל המלא</Link>
                   </Button>
                 </div>
               </div>

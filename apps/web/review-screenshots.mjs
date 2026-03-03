@@ -1,4 +1,4 @@
-// Design review screenshot script — run as a Playwright test
+// Design review screenshot script - run as a Playwright test
 // npx playwright test review-screenshots.mjs --config=playwright.review.config.ts
 import { test, chromium } from "@playwright/test";
 import path from "path";
@@ -30,8 +30,9 @@ test("capture design screenshots", async () => {
 
     // Desktop light
     await page.evaluate(() => {
-      document.documentElement.classList.remove("dark");
-      document.documentElement.classList.add("light");
+      const root = globalThis.document.documentElement;
+      root.classList.remove("dark");
+      root.classList.add("light");
     });
     await page.waitForTimeout(400);
     await page.screenshot({ path: path.join(OUT_DIR, `${name}-light.png`), fullPage: true });
@@ -43,7 +44,7 @@ test("capture design screenshots", async () => {
     await mob.waitForTimeout(600);
     await mob.screenshot({ path: path.join(OUT_DIR, `${name}-mobile.png`), fullPage: true });
     await mob.close();
-    console.log(`✓ ${name}`);
+    console.log(`OK ${name}`);
   }
 
   await browser.close();

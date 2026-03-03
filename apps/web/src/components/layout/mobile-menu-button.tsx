@@ -12,7 +12,7 @@ export function MobileMenuButton() {
       size="icon"
       className="h-9 w-9 md:hidden"
       onClick={toggleMobileMenu}
-      aria-label="Open menu"
+      aria-label="פתיחת תפריט"
     >
       <Menu className="h-4 w-4" />
     </Button>

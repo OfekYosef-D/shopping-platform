@@ -1,12 +1,13 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { publicEnv } from "@/lib/env/public";
 
 export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    publicEnv.NEXT_PUBLIC_SUPABASE_URL,
+    publicEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     {
       cookies: {
         getAll() {
@@ -34,7 +35,6 @@ export async function middleware(request: NextRequest) {
   // Edge-level route protection — redirect unauthenticated users before RSC rendering
   const pathname = request.nextUrl.pathname;
   const isProtectedRoute =
-    pathname.startsWith("/cart") ||
     pathname.startsWith("/checkout") ||
     pathname.startsWith("/dashboard");
 

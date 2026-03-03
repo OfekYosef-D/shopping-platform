@@ -1,6 +1,17 @@
 {
   "$schema": "https://turborepo.dev/schema.v2.json",
   "ui": "tui",
+  "globalEnv": [
+    "CI",
+    "DATABASE_URL",
+    "E2E_USER_EMAIL",
+    "E2E_USER_PASSWORD",
+    "NEXT_PUBLIC_SITE_URL",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+    "NEXT_PUBLIC_SUPABASE_URL",
+    "STRIPE_SECRET_KEY",
+    "STRIPE_WEBHOOK_SECRET"
+  ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
@@ -15,6 +26,11 @@
     },
     "test": {
       "dependsOn": ["build"]
+    },
+    "test:e2e": {
+      "dependsOn": ["build"],
+      "cache": false,
+      "outputs": ["playwright-report/**", "test-results/**"]
     },
     "dev": {
       "cache": false,

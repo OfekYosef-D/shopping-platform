@@ -94,7 +94,7 @@ describe("createCheckoutSession", () => {
   it("throws Unauthorized when no user is authenticated", async () => {
     vi.mocked(createClient).mockResolvedValue(makeMockSupabase(null) as never);
 
-    await expect(createCheckoutSession()).rejects.toThrow("Unauthorized");
+    await expect(createCheckoutSession()).rejects.toThrow("יש להתחבר כדי להמשיך לתשלום.");
   });
 
   it("throws when the cart is empty", async () => {
@@ -103,7 +103,7 @@ describe("createCheckoutSession", () => {
     );
     vi.mocked(db.select).mockReturnValue(makeSelectChain([]) as never);
 
-    await expect(createCheckoutSession()).rejects.toThrow("Your cart is empty.");
+    await expect(createCheckoutSession()).rejects.toThrow("הסל שלך ריק.");
   });
 
   it("throws when a cart item exceeds available stock", async () => {
@@ -113,7 +113,7 @@ describe("createCheckoutSession", () => {
     const lowStockItems = [{ ...MOCK_CART_ITEMS[0], stock: 1, quantity: 5 }];
     vi.mocked(db.select).mockReturnValue(makeSelectChain(lowStockItems) as never);
 
-    await expect(createCheckoutSession()).rejects.toThrow(/only has 1 units available/);
+    await expect(createCheckoutSession()).rejects.toThrow(/זמין כרגע בכמות של 1 יחידות בלבד/);
   });
 
   it("creates a Stripe checkout session with correct line items and metadata", async () => {
@@ -137,11 +137,11 @@ describe("createCheckoutSession", () => {
         line_items: expect.arrayContaining([
           expect.objectContaining({
             quantity: 2,
-            price_data: expect.objectContaining({ unit_amount: 2999 }),
+            price_data: expect.objectContaining({ currency: "ils", unit_amount: 2999 }),
           }),
           expect.objectContaining({
             quantity: 1,
-            price_data: expect.objectContaining({ unit_amount: 4999 }),
+            price_data: expect.objectContaining({ currency: "ils", unit_amount: 4999 }),
           }),
         ]),
       })

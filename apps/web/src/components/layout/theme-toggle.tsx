@@ -13,7 +13,7 @@ export function ThemeToggle() {
 
   if (!mounted) {
     return (
-      <Button variant="ghost" size="icon" className="h-9 w-9" aria-label="Toggle theme">
+      <Button variant="ghost" size="icon" className="h-9 w-9" aria-label="החלפת ערכת נושא">
         <span className="h-4 w-4" />
       </Button>
     );
@@ -25,7 +25,7 @@ export function ThemeToggle() {
       size="icon"
       className="h-9 w-9"
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-      aria-label="Toggle theme"
+      aria-label="החלפת ערכת נושא"
     >
       {theme === "dark" ? (
         <Sun className="h-4 w-4 transition-transform duration-300 rotate-0 scale-100" />

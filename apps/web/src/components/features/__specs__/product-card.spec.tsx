@@ -5,7 +5,7 @@ import { ProductCard } from "../product-card";
 // Mock the AddToCartButton since it's a Client Component
 vi.mock("../add-to-cart-button", () => ({
   AddToCartButton: ({ productId }: { productId: string }) => (
-    <button data-testid={`add-to-cart-${productId}`}>Add to Cart</button>
+    <button data-testid={`add-to-cart-${productId}`}>הוספה לסל</button>
   ),
 }));
 
@@ -21,7 +21,8 @@ describe("ProductCard", () => {
   it("should render product name and price", () => {
     render(<ProductCard {...defaultProps} />);
     expect(screen.getByText("Test Product")).toBeInTheDocument();
-    expect(screen.getByText("$19.99")).toBeInTheDocument();
+    const price = screen.getByText((content) => content.includes("19.99"));
+    expect(price.textContent).toContain("₪");
   });
 
   it("should link to correct product detail page", () => {
@@ -34,6 +35,7 @@ describe("ProductCard", () => {
     render(<ProductCard {...defaultProps} imageUrl={null} />);
     const placeholder = screen.getByTestId("image-placeholder");
     expect(placeholder).toBeInTheDocument();
+    expect(placeholder).toHaveTextContent("ללא תמונה");
   });
 
   it("should render the AddToCartButton", () => {

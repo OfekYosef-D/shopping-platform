@@ -84,7 +84,7 @@ describe("CartDrawer", () => {
     render(<CartDrawer />);
 
     expect(screen.getByTestId("cart-drawer")).toBeInTheDocument();
-    expect(screen.getByText("Your Cart")).toBeInTheDocument();
+    expect(screen.getByText("סל קניות")).toBeInTheDocument();
   });
 
   it("shows cart items when data is loaded", () => {
@@ -110,7 +110,7 @@ describe("CartDrawer", () => {
     render(<CartDrawer />);
 
     expect(screen.getByTestId("cart-empty")).toBeInTheDocument();
-    expect(screen.getByText("Your cart is empty")).toBeInTheDocument();
+    expect(screen.getByText("הסל שלך עדיין ריק.")).toBeInTheDocument();
   });
 
   it("shows loading skeleton when isLoading is true", () => {

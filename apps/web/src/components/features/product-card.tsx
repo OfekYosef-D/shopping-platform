@@ -26,7 +26,7 @@ export function ProductCard({ id, name, slug, priceInCents, imageUrl, category, 
       <Link href={`/products/${slug}`} className="block flex-1">
         <div className="relative aspect-square overflow-hidden rounded-xl bg-muted/50">
           {category && (
-            <span className="absolute left-2 top-2 z-10 rounded-full border border-black/10 bg-black/5 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground backdrop-blur-sm dark:border-white/10 dark:bg-black/40">
+            <span className="absolute left-2 top-2 z-10 rounded-full border border-black/10 bg-black/5 px-2 py-0.5 text-[10px] font-semibold text-muted-foreground backdrop-blur-sm dark:border-white/10 dark:bg-black/40">
               {category}
             </span>
           )}
@@ -45,7 +45,7 @@ export function ProductCard({ id, name, slug, priceInCents, imageUrl, category, 
               data-testid="image-placeholder"
               className="flex h-full w-full items-center justify-center bg-secondary text-secondary-foreground"
             >
-              No Image
+              ללא תמונה
             </div>
           )}
         </div>
