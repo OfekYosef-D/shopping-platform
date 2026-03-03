@@ -21,11 +21,18 @@ test.beforeEach(async ({ page: _page }, testInfo) => {
 });
 
 test.describe("User journey: auth -> cart -> checkout", () => {
-  test("should redirect unauthenticated users away from /cart", async ({
+  test("should show cart UI to unauthenticated users (guest cart supported)", async ({
     page,
   }) => {
     await page.goto("/cart");
-    await expect(page).toHaveURL(/\/login/);
+    // Guest cart is supported via cookies – the page should render, NOT redirect
+    await expect(page).not.toHaveURL(/\/login/);
+    // Either the empty-cart message or a cart heading should be visible
+    const emptyMsg = page.getByText(/הסל עדיין ריק/);
+    const cartHeading = page.getByRole("heading", { name: /סל הקניות שלך/ });
+    const hasEmpty = await emptyMsg.isVisible();
+    const hasHeading = await cartHeading.isVisible();
+    expect(hasEmpty || hasHeading).toBe(true);
   });
 
   test("should login successfully and land on /products", async ({ page }) => {

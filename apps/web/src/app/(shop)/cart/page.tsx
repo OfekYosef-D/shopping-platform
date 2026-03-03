@@ -1,4 +1,3 @@
-import { redirect } from "next/navigation";
 import Link from "next/link";
 import { db } from "@/db";
 import { cartItems, products } from "@/db/schema";
@@ -15,13 +14,23 @@ export const dynamic = "force-dynamic";
 
 type GuestCartItem = { productId: string; quantity: number };
 
+type CartItem = {
+  id: string;
+  quantity: number;
+  productId: string;
+  name: string;
+  slug: string;
+  priceInCents: number;
+  imageUrl: string | null;
+};
+
 export default async function CartPage() {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  let items: any[] = [];
+  let items: CartItem[] = [];
   let total = 0;
 
   if (!user) {
@@ -61,7 +70,7 @@ export default async function CartPage() {
           priceInCents: p.priceInCents,
           imageUrl: p.imageUrl,
         };
-      }).filter(Boolean);
+      }).filter((item): item is CartItem => item !== null);
       
       total = items.reduce((sum, item) => sum + item.priceInCents * item.quantity, 0);
     }
