@@ -13,21 +13,19 @@ export default function LoginPage() {
   const [state, formAction, isPending] = useActionState(login, null);
 
   return (
-    <Spotlight className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-dot-grid px-4 rounded-none">
-      {/* Background fade */}
+    <Spotlight className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-dot-grid rounded-none px-4">
       <div className="pointer-events-none absolute inset-0 bg-linear-to-b from-background/80 via-background/50 to-background/80" />
 
       <GlassCard className="relative z-10 w-full max-w-sm space-y-6">
-        {/* Brand */}
         <div className="space-y-1 text-center">
-          <p className="font-display text-3xl tracking-tight">Mizronim</p>
-          <p className="text-sm text-muted-foreground">Welcome back</p>
+          <p className="font-display text-3xl tracking-tight">שינה ישירה</p>
+          <p className="text-sm text-muted-foreground">ברוכים הבאים חזרה</p>
         </div>
 
         <form action={formAction} className="space-y-4">
           <div className="space-y-2">
             <label htmlFor="email" className="text-sm font-medium">
-              Email
+              אימייל
             </label>
             <Input
               id="email"
@@ -35,13 +33,13 @@ export default function LoginPage() {
               type="email"
               autoComplete="email"
               required
-              placeholder="you@example.com"
+              placeholder="name@example.com"
             />
           </div>
 
           <div className="space-y-2">
             <label htmlFor="password" className="text-sm font-medium">
-              Password
+              סיסמה
             </label>
             <Input
               id="password"
@@ -49,30 +47,37 @@ export default function LoginPage() {
               type="password"
               autoComplete="current-password"
               required
-              placeholder="••••••••"
+              placeholder="********"
             />
           </div>
 
           {state && !state.success && (
-            <p className="text-destructive text-sm">{state.message}</p>
+            <p className="text-sm text-destructive">{state.message}</p>
           )}
 
-          <Button type="submit" className="w-full rounded-full" disabled={isPending}>
+          <Button
+            type="submit"
+            className="w-full rounded-full"
+            disabled={isPending}
+          >
             {isPending ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Signing in…
+                מתחבר...
               </>
             ) : (
-              "Sign In"
+              "התחברות"
             )}
           </Button>
         </form>
 
         <p className="text-center text-sm text-muted-foreground">
-          Don&apos;t have an account?{" "}
-          <Link href="/register" className="text-foreground underline-offset-4 hover:underline">
-            Register
+          עדיין אין לכם חשבון?{" "}
+          <Link
+            href="/register"
+            className="text-foreground underline-offset-4 hover:underline"
+          >
+            הרשמה
           </Link>
         </p>
       </GlassCard>

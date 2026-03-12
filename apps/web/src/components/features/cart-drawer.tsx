@@ -36,10 +36,10 @@ export function CartDrawer() {
       try {
         const result = await mutation();
         if (!result.success) {
-          toast.error(result.message || "Unable to update cart");
+          toast.error(result.message || "לא ניתן לעדכן את הסל כרגע");
         }
       } catch {
-        toast.error("Unable to update cart");
+        toast.error("לא ניתן לעדכן את הסל כרגע");
       } finally {
         await queryClient.invalidateQueries({ queryKey: ["cart"] });
         setActiveMutationKey(null);
@@ -78,7 +78,7 @@ export function CartDrawer() {
             <div className="flex h-16 items-center justify-between border-b border-border/40 px-6">
               <div className="flex items-center gap-2">
                 <ShoppingCart className="h-5 w-5" />
-                <span className="font-semibold tracking-tight">Your Cart</span>
+                <span className="font-semibold tracking-tight">הסל שלך</span>
                 {items.length > 0 && (
                   <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground text-[10px] font-bold">
                     {items.length}
@@ -90,7 +90,7 @@ export function CartDrawer() {
                 size="icon"
                 className="h-9 w-9"
                 onClick={closeCart}
-                aria-label="Close cart"
+                aria-label="סגירת סל"
                 data-testid="cart-close"
               >
                 <X className="h-4 w-4" />
@@ -121,9 +121,7 @@ export function CartDrawer() {
                   data-testid="cart-empty"
                 >
                   <Package className="h-12 w-12 text-muted-foreground/40" />
-                  <p className="text-sm text-muted-foreground">
-                    Your cart is empty
-                  </p>
+                  <p className="text-sm text-muted-foreground">הסל שלך ריק</p>
                   <Button
                     variant="outline"
                     size="sm"
@@ -131,7 +129,7 @@ export function CartDrawer() {
                     onClick={closeCart}
                     asChild
                   >
-                    <Link href="/products">Browse Products</Link>
+                    <Link href="/products">למעבר למוצרים</Link>
                   </Button>
                 </div>
               ) : (
@@ -162,7 +160,7 @@ export function CartDrawer() {
                             />
                           ) : (
                             <div className="flex h-full w-full items-center justify-center text-[10px] text-muted-foreground">
-                              No Image
+                              אין תמונה
                             </div>
                           )}
                         </div>
@@ -177,7 +175,7 @@ export function CartDrawer() {
                             {item.name}
                           </Link>
                           <span className="text-xs text-muted-foreground">
-                            {formatPrice(item.priceInCents)} each
+                            {formatPrice(item.priceInCents)} ליחידה
                           </span>
 
                           {/* Quantity controls + remove */}
@@ -185,7 +183,7 @@ export function CartDrawer() {
                             <button
                               type="button"
                               className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border border-border/40 transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
-                              aria-label="Decrease quantity"
+                              aria-label="הקטנת כמות"
                               disabled={
                                 isMutating &&
                                 activeMutationKey === `qty:${item.id}`
@@ -213,7 +211,7 @@ export function CartDrawer() {
                             <button
                               type="button"
                               className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border border-border/40 transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
-                              aria-label="Increase quantity"
+                              aria-label="הגדלת כמות"
                               disabled={
                                 isMutating &&
                                 activeMutationKey === `qty:${item.id}`
@@ -233,7 +231,7 @@ export function CartDrawer() {
 
                             <button
                               type="button"
-                              className="ml-auto cursor-pointer text-xs text-muted-foreground transition-colors hover:text-destructive disabled:cursor-not-allowed disabled:opacity-50"
+                              className="mr-auto cursor-pointer text-xs text-muted-foreground transition-colors hover:text-destructive disabled:cursor-not-allowed disabled:opacity-50"
                               data-testid="drawer-remove"
                               disabled={
                                 isMutating &&
@@ -248,7 +246,7 @@ export function CartDrawer() {
                                 )
                               }
                             >
-                              Remove
+                              הסרה
                             </button>
                           </div>
                         </div>
@@ -269,7 +267,7 @@ export function CartDrawer() {
               <div className="space-y-3 border-t border-border/40 px-6 py-4">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-muted-foreground">
-                    Subtotal
+                    סכום ביניים
                   </span>
                   <span className="font-semibold tabular-nums">
                     {formatPrice(total)}
@@ -281,7 +279,7 @@ export function CartDrawer() {
                     asChild
                     onClick={closeCart}
                   >
-                    <Link href="/checkout">Checkout</Link>
+                    <Link href="/checkout">לתשלום</Link>
                   </Button>
                   <Button
                     variant="outline"
@@ -289,7 +287,7 @@ export function CartDrawer() {
                     asChild
                     onClick={closeCart}
                   >
-                    <Link href="/cart">View Full Cart</Link>
+                    <Link href="/cart">לצפייה בסל המלא</Link>
                   </Button>
                 </div>
               </div>

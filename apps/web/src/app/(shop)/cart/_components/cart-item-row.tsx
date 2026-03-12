@@ -29,9 +29,20 @@ export function CartItemRow({
   // Cast needed: React form action expects (fd) => void, but our server actions
   // return { success, message } — React ignores the return value at runtime.
   type FormAction = (formData: FormData) => void;
-  const decrementAction = updateCartQuantity.bind(null, id, quantity - 1) as unknown as FormAction;
-  const incrementAction = updateCartQuantity.bind(null, id, quantity + 1) as unknown as FormAction;
-  const removeAction = removeFromCart.bind(null, productId) as unknown as FormAction;
+  const decrementAction = updateCartQuantity.bind(
+    null,
+    id,
+    quantity - 1,
+  ) as unknown as FormAction;
+  const incrementAction = updateCartQuantity.bind(
+    null,
+    id,
+    quantity + 1,
+  ) as unknown as FormAction;
+  const removeAction = removeFromCart.bind(
+    null,
+    productId,
+  ) as unknown as FormAction;
 
   return (
     <div className="flex items-center gap-4 p-4">
@@ -41,7 +52,7 @@ export function CartItemRow({
           <Image src={imageUrl} alt={name} fill className="object-cover" />
         ) : (
           <div className="flex h-full w-full items-center justify-center text-xs text-muted-foreground">
-            No Image
+            אין תמונה
           </div>
         )}
       </div>
@@ -54,13 +65,20 @@ export function CartItemRow({
         >
           {name}
         </Link>
-        <p className="text-sm text-muted-foreground">{formatPrice(priceInCents)}</p>
+        <p className="text-sm text-muted-foreground">
+          {formatPrice(priceInCents)}
+        </p>
       </div>
 
       {/* Quantity controls */}
       <div className="flex items-center gap-2">
         <form action={decrementAction}>
-          <Button type="submit" variant="outline" size="icon" className="h-8 w-8">
+          <Button
+            type="submit"
+            variant="outline"
+            size="icon"
+            className="h-8 w-8"
+          >
             <Minus className="h-3 w-3" />
           </Button>
         </form>
@@ -71,14 +89,19 @@ export function CartItemRow({
           {quantity}
         </span>
         <form action={incrementAction}>
-          <Button type="submit" variant="outline" size="icon" className="h-8 w-8">
+          <Button
+            type="submit"
+            variant="outline"
+            size="icon"
+            className="h-8 w-8"
+          >
             <Plus className="h-3 w-3" />
           </Button>
         </form>
       </div>
 
       {/* Subtotal */}
-      <p className="font-semibold w-20 text-right">
+      <p className="font-semibold w-20 text-left">
         {formatPrice(priceInCents * quantity)}
       </p>
 
@@ -90,6 +113,7 @@ export function CartItemRow({
           size="icon"
           className="h-8 w-8 text-destructive"
           data-testid="remove-button"
+          aria-label="הסרת מוצר מהסל"
         >
           <Trash2 className="h-4 w-4" />
         </Button>

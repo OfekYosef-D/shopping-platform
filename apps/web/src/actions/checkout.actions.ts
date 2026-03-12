@@ -15,7 +15,7 @@ export async function createCheckoutSession(): Promise<string> {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) throw new Error("Unauthorized");
+  if (!user) throw new Error("לא מורשה");
 
   // Load cart items joined with product data
   const items = await db
@@ -32,18 +32,20 @@ export async function createCheckoutSession(): Promise<string> {
     .innerJoin(products, eq(cartItems.productId, products.id))
     .where(eq(cartItems.userId, user.id));
 
-  if (items.length === 0) throw new Error("Your cart is empty.");
+  if (items.length === 0) throw new Error("הסל שלך ריק.");
 
   // Validate stock availability
   for (const item of items) {
     if (item.stock < item.quantity) {
-      throw new Error(`"${item.name}" only has ${item.stock} units available.`);
+      throw new Error(
+        `למוצר "${item.name}" נותרו רק ${item.stock} יחידות במלאי.`,
+      );
     }
   }
 
   const totalInCents = items.reduce(
     (sum, item) => sum + item.priceInCents * item.quantity,
-    0
+    0,
   );
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
@@ -52,7 +54,7 @@ export async function createCheckoutSession(): Promise<string> {
     mode: "payment",
     line_items: items.map((item) => ({
       price_data: {
-        currency: "usd",
+        currency: "ils",
         product_data: {
           name: item.name,
           ...(item.imageUrl ? { images: [item.imageUrl] } : {}),
@@ -85,7 +87,7 @@ export async function createCheckoutSession(): Promise<string> {
         productName: item.name,
         priceInCents: item.priceInCents,
         quantity: item.quantity,
-      }))
+      })),
     );
   });
 

@@ -10,7 +10,7 @@ vi.mock("@/actions/cart.actions", () => ({
 const mockItem = {
   id: "cart-item-1",
   productId: "prod-1",
-  name: "Test Product",
+  name: "מזרן בדיקה",
   slug: "test-product",
   priceInCents: 2999,
   imageUrl: null,
@@ -19,22 +19,21 @@ const mockItem = {
 
 describe("Cart Page", () => {
   it("should render empty cart state", () => {
-    render(
-      <p className="text-muted-foreground">Your cart is empty.</p>
-    );
-    expect(screen.getByText("Your cart is empty.")).toBeInTheDocument();
+    render(<p className="text-muted-foreground">הסל שלך ריק.</p>);
+    expect(screen.getByText("הסל שלך ריק.")).toBeInTheDocument();
   });
 
   it("should list cart items with quantities", () => {
     render(<CartItemRow {...mockItem} />);
-    expect(screen.getByText("Test Product")).toBeInTheDocument();
+    expect(screen.getByText("מזרן בדיקה")).toBeInTheDocument();
     expect(screen.getByTestId("quantity")).toHaveTextContent("2");
   });
 
   it("should update total when quantity changes", () => {
     render(<CartItemRow {...mockItem} />);
-    // Subtotal = 2 * $29.99 = $59.98
-    expect(screen.getByText("$59.98")).toBeInTheDocument();
+    expect(
+      screen.getByText((content) => content.includes("59.98")),
+    ).toBeInTheDocument();
   });
 
   it("should remove item from cart", () => {

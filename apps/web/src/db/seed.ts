@@ -1,11 +1,8 @@
 /**
- * Seed script — populates the products table with sample data.
+ * Seed script - populates the products table with demo data.
  *
- * Run from apps/web/:
+ * Run from apps/web:
  *   bun src/db/seed.ts
- *
- * Bun auto-loads .env.local so DATABASE_URL will be available.
- * Safe to re-run: uses onConflictDoUpdate on slug (idempotent).
  */
 
 import { sql } from "drizzle-orm";
@@ -13,122 +10,116 @@ import { db } from "./index";
 import { products } from "./schema";
 
 const productList = [
-  // ── Electronics ──────────────────────────────────────────────────────────
   {
-    name: "Wireless Earbuds Pro",
-    slug: "wireless-earbuds-pro",
+    name: "מזרן ויסקו אורטופדי פרימיום",
+    slug: "premium-orthopedic-memory-foam",
     description:
-      "Premium noise-cancelling wireless earbuds with 30-hour battery life and seamless multipoint connectivity.",
-    priceInCents: 7999,
+      "מזרן ויסקו תומך במיוחד עם שכבת נוחות מפנקת, מתאים לכל תנוחות השינה.",
+    priceInCents: 249900,
     imageUrl:
-      "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=800&q=80",
-    category: "Electronics",
-    stock: 25,
+      "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=800&q=80",
+    category: "מזרנים",
+    stock: 18,
   },
   {
-    name: "Portable Charger 20 000 mAh",
-    slug: "portable-charger-20000",
+    name: "מזרן קפיצים מבודדים 160x200",
+    slug: "pocket-spring-mattress-160x200",
     description:
-      "Ultra-slim power bank with USB-C PD 65 W fast charging. Charges a laptop twice or a phone six times.",
-    priceInCents: 3999,
+      "קפיצים מבודדים להפחתת תזוזות, תמיכה אופטימלית ונוחות רציפה לאורך כל הלילה.",
+    priceInCents: 189900,
     imageUrl:
-      "https://images.unsplash.com/photo-1609091839311-d5365f9ff1c5?w=800&q=80",
-    category: "Electronics",
-    stock: 40,
+      "https://images.unsplash.com/photo-1560185007-cde436f6a4d0?w=800&q=80",
+    category: "מזרנים",
+    stock: 22,
   },
   {
-    name: "Smart Watch Series X",
-    slug: "smart-watch-series-x",
+    name: "מזרן לטקס טבעי",
+    slug: "natural-latex-mattress",
     description:
-      "Always-on AMOLED display, GPS, heart-rate monitor, and 7-day battery. Water-resistant to 50 m.",
-    priceInCents: 19999,
+      "מזרן לטקס מאוורר עם גמישות גבוהה, נוחות טבעית ועמידות לשנים רבות.",
+    priceInCents: 279900,
     imageUrl:
-      "https://images.unsplash.com/photo-1579586337278-3befd40fd17a?w=800&q=80",
-    category: "Electronics",
-    stock: 15,
-  },
-  // ── Apparel ───────────────────────────────────────────────────────────────
-  {
-    name: "Classic Cotton T-Shirt",
-    slug: "classic-cotton-tshirt",
-    description:
-      "100 % organic cotton, pre-washed for softness. Relaxed fit with a reinforced collar.",
-    priceInCents: 2999,
-    imageUrl:
-      "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&q=80",
-    category: "Apparel",
-    stock: 60,
+      "https://images.unsplash.com/photo-1616594039964-3f7e25492e92?w=800&q=80",
+    category: "מזרנים",
+    stock: 12,
   },
   {
-    name: "Essential Hoodie",
-    slug: "essential-hoodie",
+    name: "מזרן היברידי זוגי",
+    slug: "hybrid-double-mattress",
     description:
-      "Heavyweight French terry hoodie with a brushed interior. Kangaroo pocket and ribbed cuffs.",
-    priceInCents: 5999,
+      "שילוב שכבות ספוג וקפיצים לנוחות מאוזנת ותמיכה מלאה בעמוד השדרה.",
+    priceInCents: 219900,
     imageUrl:
-      "https://images.unsplash.com/photo-1556821840-3a63f15732ce?w=800&q=80",
-    category: "Apparel",
-    stock: 30,
+      "https://images.unsplash.com/photo-1631048500397-2d5eb06f16b9?w=800&q=80",
+    category: "מזרנים",
+    stock: 16,
   },
   {
-    name: "Classic Denim Jacket",
-    slug: "classic-denim-jacket",
-    description:
-      "Washed selvedge denim jacket with brass buttons and a relaxed western silhouette.",
-    priceInCents: 8999,
+    name: "כרית ויסקו אנטומית",
+    slug: "anatomic-memory-pillow",
+    description: "כרית אנטומית המתאימה את עצמה לצוואר ולראש ומפחיתה עומסים.",
+    priceInCents: 19900,
     imageUrl:
-      "https://images.unsplash.com/photo-1576995853123-5a10305d93c0?w=800&q=80",
-    category: "Apparel",
-    stock: 20,
-  },
-  {
-    name: "Tapered Jogger Pants",
-    slug: "tapered-jogger-pants",
-    description:
-      "Four-way stretch fabric with a tapered fit. Side zip pockets and an elastic waistband.",
-    priceInCents: 4499,
-    imageUrl:
-      "https://images.unsplash.com/photo-1552902865-b72c031ac5ea?w=800&q=80",
-    category: "Apparel",
-    stock: 35,
-  },
-  // ── Accessories ───────────────────────────────────────────────────────────
-  {
-    name: "Slim Leather Wallet",
-    slug: "slim-leather-wallet",
-    description:
-      "Full-grain vegetable-tanned leather. Six card slots and a cash compartment. RFID-blocking lining.",
-    priceInCents: 4999,
-    imageUrl:
-      "https://images.unsplash.com/photo-1627123424574-724758594e93?w=800&q=80",
-    category: "Accessories",
-    stock: 50,
-  },
-  {
-    name: "Polarised Sunglasses",
-    slug: "polarised-sunglasses",
-    description:
-      "UV400 polarised lenses in a recycled acetate frame. Includes a hard case and microfibre pouch.",
-    priceInCents: 3499,
-    imageUrl:
-      "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=800&q=80",
-    category: "Accessories",
-    stock: 45,
-  },
-  {
-    name: "Structured Baseball Cap",
-    slug: "structured-baseball-cap",
-    description:
-      "Six-panel twill cap with a curved brim and adjustable snap-back closure. One size fits all.",
-    priceInCents: 2499,
-    imageUrl:
-      "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=800&q=80",
-    category: "Accessories",
+      "https://images.unsplash.com/photo-1629949009765-2beac65dc60d?w=800&q=80",
+    category: "כריות",
     stock: 55,
+  },
+  {
+    name: "כרית שינה קירור ג'ל",
+    slug: "cooling-gel-pillow",
+    description: "כרית עם שכבת ג'ל מקררת לשינה נעימה גם בלילות חמים.",
+    priceInCents: 22900,
+    imageUrl:
+      "https://images.unsplash.com/photo-1519710164239-da123dc03ef4?w=800&q=80",
+    category: "כריות",
+    stock: 48,
+  },
+  {
+    name: "כרית לטקס תומכת צוואר",
+    slug: "latex-neck-support-pillow",
+    description: "כרית לטקס אלסטית עם תמיכה מוגברת לאזור הצוואר והכתפיים.",
+    priceInCents: 23900,
+    imageUrl:
+      "https://images.unsplash.com/photo-1549187774-b4e9b0445b41?w=800&q=80",
+    category: "כריות",
+    stock: 34,
+  },
+  {
+    name: "כרית מיקרופייבר רכה",
+    slug: "soft-microfiber-pillow",
+    description:
+      "כרית רכה במיוחד במילוי מיקרופייבר איכותי, מתאימה לשינה על הגב והצד.",
+    priceInCents: 14900,
+    imageUrl:
+      "https://images.unsplash.com/photo-1582582494700-0d773a3077c2?w=800&q=80",
+    category: "כריות",
+    stock: 70,
+  },
+  {
+    name: "טופר ויסקו 7 ס״מ",
+    slug: "memory-foam-topper-7cm",
+    description:
+      "שכבת ויסקו לשדרוג מיידי של כל מזרן, להוספת רכות ותמיכה מדויקת.",
+    priceInCents: 89900,
+    imageUrl:
+      "https://images.unsplash.com/photo-1600490036275-35f5f1656861?w=800&q=80",
+    category: "אביזרי שינה",
+    stock: 27,
+  },
+  {
+    name: "מגן מזרן נושם",
+    slug: "breathable-mattress-protector",
+    description:
+      "מגן מזרן איכותי ודוחה נוזלים עם בד נושם לשמירה על המזרן לאורך זמן.",
+    priceInCents: 12900,
+    imageUrl:
+      "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800&q=80",
+    category: "אביזרי שינה",
+    stock: 80,
   },
 ];
 
-console.log(`Seeding ${productList.length} products…`);
+console.log(`Seeding ${productList.length} products...`);
 
 await db
   .insert(products)
@@ -146,5 +137,5 @@ await db
     },
   });
 
-console.log(`✓ Done — ${productList.length} products upserted.`);
+console.log(`Done - ${productList.length} products upserted.`);
 process.exit(0);

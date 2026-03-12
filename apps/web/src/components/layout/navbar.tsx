@@ -33,7 +33,7 @@ export async function Navbar() {
             href="/"
             className="font-display text-2xl tracking-tight hover:opacity-80 transition-opacity"
           >
-            Mizronim
+            שינה ישירה
           </Link>
 
           {/* Desktop nav */}
@@ -42,7 +42,7 @@ export async function Navbar() {
               href="/products"
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
-              Products
+              מוצרים
             </Link>
             <CartTriggerButton initialCount={cartCount} />
             {user ? (
@@ -58,13 +58,13 @@ export async function Navbar() {
                   href="/login"
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  Sign In
+                  התחברות
                 </Link>
                 <Link
                   href="/register"
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  Register
+                  הרשמה
                 </Link>
               </>
             )}

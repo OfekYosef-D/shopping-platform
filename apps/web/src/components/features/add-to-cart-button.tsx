@@ -24,7 +24,7 @@ export function AddToCartButton({ productId }: AddToCartButtonProps) {
   useEffect(() => {
     if (wasPendingRef.current && !isPending) {
       if (state.success) {
-        toast.success("Added to cart!");
+        toast.success("המוצר נוסף לסל");
         queryClient.invalidateQueries({ queryKey: ["cart"] });
       } else if (state.message) {
         toast.error(state.message);
@@ -43,12 +43,12 @@ export function AddToCartButton({ productId }: AddToCartButtonProps) {
         {isPending ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Adding...
+            מוסיף...
           </>
         ) : (
           <>
             <Plus className="mr-2 h-4 w-4" />
-            Add to Cart
+            הוספה לסל
           </>
         )}
       </Button>

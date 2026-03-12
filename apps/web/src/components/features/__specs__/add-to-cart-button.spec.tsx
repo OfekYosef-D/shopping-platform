@@ -43,7 +43,7 @@ describe("AddToCartButton", () => {
 
     const button = screen.getByRole("button");
     expect(button).not.toBeDisabled();
-    expect(screen.getByText("Add to Cart")).toBeInTheDocument();
+    expect(screen.getByText("הוספה לסל")).toBeInTheDocument();
   });
 
   it("disables button and shows spinner while request is pending", () => {
@@ -56,12 +56,12 @@ describe("AddToCartButton", () => {
     render(<AddToCartButton productId="prod-1" />);
 
     expect(screen.getByRole("button")).toBeDisabled();
-    expect(screen.getByText("Adding...")).toBeInTheDocument();
+    expect(screen.getByText("מוסיף...")).toBeInTheDocument();
   });
 
   it("shows inline error text when action returns a failure message", () => {
     vi.mocked(useActionState).mockReturnValue([
-      { success: false, message: "Please sign in to add items to cart" },
+      { success: false, message: "יש להתחבר כדי להוסיף מוצרים לסל." },
       mockFormAction,
       false,
     ]);
@@ -69,19 +69,19 @@ describe("AddToCartButton", () => {
     render(<AddToCartButton productId="prod-1" />);
 
     expect(
-      screen.getByText("Please sign in to add items to cart"),
+      screen.getByText("יש להתחבר כדי להוסיף מוצרים לסל."),
     ).toBeInTheDocument();
   });
 
   it("does not render failure message when action succeeds", () => {
     vi.mocked(useActionState).mockReturnValue([
-      { success: true, message: "Added to cart" },
+      { success: true, message: "המוצר נוסף לסל." },
       mockFormAction,
       false,
     ]);
 
     render(<AddToCartButton productId="prod-1" />);
 
-    expect(screen.queryByText("Added to cart")).not.toBeInTheDocument();
+    expect(screen.queryByText("המוצר נוסף לסל.")).not.toBeInTheDocument();
   });
 });

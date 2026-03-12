@@ -57,7 +57,7 @@ const MOCK_ITEMS = [
   {
     id: "ci-1",
     productId: "prod-1",
-    name: "Widget Pro",
+    name: "מזרן אורטופדי",
     slug: "widget-pro",
     priceInCents: 2999,
     imageUrl: null,
@@ -70,11 +70,11 @@ describe("CartDrawer", () => {
     vi.clearAllMocks();
     mockUpdateCartQuantity.mockResolvedValue({
       success: true,
-      message: "Quantity updated",
+      message: "הכמות עודכנה בהצלחה.",
     });
     mockRemoveFromCart.mockResolvedValue({
       success: true,
-      message: "Removed from cart",
+      message: "המוצר הוסר מהסל.",
     });
   });
 
@@ -100,7 +100,7 @@ describe("CartDrawer", () => {
     render(<CartDrawer />);
 
     expect(screen.getByTestId("cart-drawer")).toBeInTheDocument();
-    expect(screen.getByText("Your Cart")).toBeInTheDocument();
+    expect(screen.getByText("הסל שלך")).toBeInTheDocument();
   });
 
   it("shows cart items when data is loaded", () => {
@@ -112,7 +112,7 @@ describe("CartDrawer", () => {
 
     render(<CartDrawer />);
 
-    expect(screen.getByText("Widget Pro")).toBeInTheDocument();
+    expect(screen.getByText("מזרן אורטופדי")).toBeInTheDocument();
     expect(screen.getByTestId("drawer-quantity")).toHaveTextContent("2");
   });
 
@@ -126,7 +126,7 @@ describe("CartDrawer", () => {
     render(<CartDrawer />);
 
     expect(screen.getByTestId("cart-empty")).toBeInTheDocument();
-    expect(screen.getByText("Your cart is empty")).toBeInTheDocument();
+    expect(screen.getByText("הסל שלך ריק")).toBeInTheDocument();
   });
 
   it("shows loading skeleton when isLoading is true", () => {
@@ -175,7 +175,7 @@ describe("CartDrawer", () => {
     } as never);
 
     render(<CartDrawer />);
-    fireEvent.click(screen.getByRole("button", { name: /increase quantity/i }));
+    fireEvent.click(screen.getByRole("button", { name: /הגדלת כמות/i }));
 
     await waitFor(() => {
       expect(mockUpdateCartQuantity).toHaveBeenCalledWith(

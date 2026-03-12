@@ -2,7 +2,6 @@ import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { ProductsGrid } from "../products-grid";
 
-// Mock ProductCard to avoid next/image and server-action dependencies
 vi.mock("../product-card", () => ({
   ProductCard: ({ name }: { name: string }) => (
     <div data-testid="product-card-mock">{name}</div>
@@ -12,30 +11,30 @@ vi.mock("../product-card", () => ({
 const mockProducts = [
   {
     id: "1",
-    name: "Wireless Earbuds",
-    slug: "wireless-earbuds",
-    priceInCents: 7999,
+    name: "כרית ויסקו",
+    slug: "memory-pillow",
+    priceInCents: 19900,
     imageUrl: null,
-    category: "Electronics",
-    description: "Premium wireless earbuds with noise cancellation",
+    category: "כריות",
+    description: "כרית ויסקו נוחה במיוחד",
   },
   {
     id: "2",
-    name: "Classic T-Shirt",
-    slug: "classic-tshirt",
-    priceInCents: 2999,
+    name: "מזרן היברידי",
+    slug: "hybrid-mattress",
+    priceInCents: 219900,
     imageUrl: null,
-    category: "Apparel",
-    description: "Comfortable everyday organic cotton tee",
+    category: "מזרנים",
+    description: "מזרן היברידי עם תמיכה מלאה",
   },
   {
     id: "3",
-    name: "Leather Wallet",
-    slug: "leather-wallet",
-    priceInCents: 4999,
+    name: "טופר ויסקו",
+    slug: "memory-topper",
+    priceInCents: 89900,
     imageUrl: null,
-    category: "Accessories",
-    description: "Slim full-grain leather wallet with RFID blocking",
+    category: "אביזרי שינה",
+    description: "טופר לשדרוג מיידי של המזרן",
   },
 ];
 
@@ -49,12 +48,12 @@ describe("ProductsGrid", () => {
     render(<ProductsGrid products={mockProducts} />);
 
     fireEvent.change(screen.getByTestId("search-input"), {
-      target: { value: "Earbuds" },
+      target: { value: "ויסקו" },
     });
 
-    expect(screen.getByText("Wireless Earbuds")).toBeInTheDocument();
-    expect(screen.queryByText("Classic T-Shirt")).not.toBeInTheDocument();
-    expect(screen.queryByText("Leather Wallet")).not.toBeInTheDocument();
+    expect(screen.getByText("כרית ויסקו")).toBeInTheDocument();
+    expect(screen.getByText("טופר ויסקו")).toBeInTheDocument();
+    expect(screen.queryByText("מזרן היברידי")).not.toBeInTheDocument();
   });
 
   it("should show empty state when search yields no results", () => {
@@ -65,23 +64,21 @@ describe("ProductsGrid", () => {
     });
 
     expect(screen.getByTestId("empty-state")).toBeInTheDocument();
-    expect(screen.queryByText("Wireless Earbuds")).not.toBeInTheDocument();
+    expect(screen.queryByText("כרית ויסקו")).not.toBeInTheDocument();
   });
 
   it("should apply both search and category filters together", () => {
     render(<ProductsGrid products={mockProducts} />);
 
-    // Search for "leather" — matches Leather Wallet (Accessories)
     fireEvent.change(screen.getByTestId("search-input"), {
-      target: { value: "leather" },
+      target: { value: "ויסקו" },
     });
 
-    // Select Accessories category → Leather Wallet should be visible
-    fireEvent.click(screen.getByRole("button", { name: "Accessories" }));
-    expect(screen.getByText("Leather Wallet")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "כריות" }));
+    expect(screen.getByText("כרית ויסקו")).toBeInTheDocument();
+    expect(screen.queryByText("טופר ויסקו")).not.toBeInTheDocument();
 
-    // Switch to Electronics → no leather items → empty state
-    fireEvent.click(screen.getByRole("button", { name: "Electronics" }));
+    fireEvent.click(screen.getByRole("button", { name: "מזרנים" }));
     expect(screen.getByTestId("empty-state")).toBeInTheDocument();
   });
 });

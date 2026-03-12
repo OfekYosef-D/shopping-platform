@@ -7,7 +7,7 @@ export function LogoutButton() {
   return (
     <form action={logout}>
       <Button type="submit" variant="ghost" size="sm">
-        Sign Out
+        התנתקות
       </Button>
     </form>
   );

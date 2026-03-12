@@ -46,7 +46,9 @@ describe("Cart Actions", () => {
     // Arrange
     vi.mocked(db.query.cartItems.findFirst).mockResolvedValueOnce(undefined);
     const insertValuesMock = vi.fn();
-    vi.mocked(db.insert).mockReturnValueOnce({ values: insertValuesMock } as unknown as ReturnType<typeof db.insert>);
+    vi.mocked(db.insert).mockReturnValueOnce({
+      values: insertValuesMock,
+    } as unknown as ReturnType<typeof db.insert>);
 
     // Act
     const result = await addToCart("prod-1", 1, null, new FormData());
@@ -54,9 +56,13 @@ describe("Cart Actions", () => {
     // Assert
     expect(db.query.cartItems.findFirst).toHaveBeenCalled();
     expect(db.insert).toHaveBeenCalled();
-    expect(insertValuesMock).toHaveBeenCalledWith({ userId: "user-1", productId: "prod-1", quantity: 1 });
+    expect(insertValuesMock).toHaveBeenCalledWith({
+      userId: "user-1",
+      productId: "prod-1",
+      quantity: 1,
+    });
     expect(revalidatePath).toHaveBeenCalledWith("/cart");
-    expect(result).toEqual({ success: true, message: "Added to cart" });
+    expect(result).toEqual({ success: true, message: "המוצר נוסף לסל." });
   });
 
   it("should increment quantity for existing cart item", async () => {
@@ -70,7 +76,9 @@ describe("Cart Actions", () => {
     });
     const updateWhereMock = vi.fn();
     const updateSetMock = vi.fn(() => ({ where: updateWhereMock }));
-    vi.mocked(db.update).mockReturnValueOnce({ set: updateSetMock } as unknown as ReturnType<typeof db.update>);
+    vi.mocked(db.update).mockReturnValueOnce({
+      set: updateSetMock,
+    } as unknown as ReturnType<typeof db.update>);
 
     // Act
     const result = await addToCart("prod-1", 1, null, new FormData());
@@ -79,13 +87,15 @@ describe("Cart Actions", () => {
     expect(db.update).toHaveBeenCalled();
     expect(updateSetMock).toHaveBeenCalledWith({ quantity: 3 });
     expect(revalidatePath).toHaveBeenCalledWith("/cart");
-    expect(result).toEqual({ success: true, message: "Cart updated" });
+    expect(result).toEqual({ success: true, message: "הסל עודכן בהצלחה." });
   });
 
   it("should remove item from cart", async () => {
     // Arrange
     const deleteWhereMock = vi.fn();
-    vi.mocked(db.delete).mockReturnValueOnce({ where: deleteWhereMock } as unknown as ReturnType<typeof db.delete>);
+    vi.mocked(db.delete).mockReturnValueOnce({
+      where: deleteWhereMock,
+    } as unknown as ReturnType<typeof db.delete>);
 
     // Act
     const result = await removeFromCart("prod-1", new FormData());
@@ -94,13 +104,15 @@ describe("Cart Actions", () => {
     expect(db.delete).toHaveBeenCalled();
     expect(deleteWhereMock).toHaveBeenCalled();
     expect(revalidatePath).toHaveBeenCalledWith("/cart");
-    expect(result).toEqual({ success: true, message: "Removed from cart" });
+    expect(result).toEqual({ success: true, message: "המוצר הוסר מהסל." });
   });
 
   it("should update quantity and remove when quantity <= 0", async () => {
     // Arrange
     const deleteWhereMock = vi.fn();
-    vi.mocked(db.delete).mockReturnValueOnce({ where: deleteWhereMock } as unknown as ReturnType<typeof db.delete>);
+    vi.mocked(db.delete).mockReturnValueOnce({
+      where: deleteWhereMock,
+    } as unknown as ReturnType<typeof db.delete>);
 
     // Act
     const result = await updateCartQuantity("item-1", 0, new FormData());
@@ -109,6 +121,6 @@ describe("Cart Actions", () => {
     expect(db.delete).toHaveBeenCalled();
     expect(deleteWhereMock).toHaveBeenCalled();
     expect(revalidatePath).toHaveBeenCalledWith("/cart");
-    expect(result).toEqual({ success: true, message: "Item removed" });
+    expect(result).toEqual({ success: true, message: "המוצר הוסר מהסל." });
   });
 });

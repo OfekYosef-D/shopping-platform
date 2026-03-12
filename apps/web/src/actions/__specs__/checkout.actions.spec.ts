@@ -94,33 +94,39 @@ describe("createCheckoutSession", () => {
   it("throws Unauthorized when no user is authenticated", async () => {
     vi.mocked(createClient).mockResolvedValue(makeMockSupabase(null) as never);
 
-    await expect(createCheckoutSession()).rejects.toThrow("Unauthorized");
+    await expect(createCheckoutSession()).rejects.toThrow("לא מורשה");
   });
 
   it("throws when the cart is empty", async () => {
     vi.mocked(createClient).mockResolvedValue(
-      makeMockSupabase({ id: "user-1" }) as never
+      makeMockSupabase({ id: "user-1" }) as never,
     );
     vi.mocked(db.select).mockReturnValue(makeSelectChain([]) as never);
 
-    await expect(createCheckoutSession()).rejects.toThrow("Your cart is empty.");
+    await expect(createCheckoutSession()).rejects.toThrow("הסל שלך ריק.");
   });
 
   it("throws when a cart item exceeds available stock", async () => {
     vi.mocked(createClient).mockResolvedValue(
-      makeMockSupabase({ id: "user-1" }) as never
+      makeMockSupabase({ id: "user-1" }) as never,
     );
     const lowStockItems = [{ ...MOCK_CART_ITEMS[0], stock: 1, quantity: 5 }];
-    vi.mocked(db.select).mockReturnValue(makeSelectChain(lowStockItems) as never);
+    vi.mocked(db.select).mockReturnValue(
+      makeSelectChain(lowStockItems) as never,
+    );
 
-    await expect(createCheckoutSession()).rejects.toThrow(/only has 1 units available/);
+    await expect(createCheckoutSession()).rejects.toThrow(
+      /נותרו רק 1 יחידות במלאי/,
+    );
   });
 
   it("creates a Stripe checkout session with correct line items and metadata", async () => {
     vi.mocked(createClient).mockResolvedValue(
-      makeMockSupabase({ id: "user-1" }) as never
+      makeMockSupabase({ id: "user-1" }) as never,
     );
-    vi.mocked(db.select).mockReturnValue(makeSelectChain(MOCK_CART_ITEMS) as never);
+    vi.mocked(db.select).mockReturnValue(
+      makeSelectChain(MOCK_CART_ITEMS) as never,
+    );
     mockSessionsCreate.mockResolvedValue({
       id: "cs_test_abc123",
       url: "https://checkout.stripe.com/pay/cs_test_abc123",
@@ -144,16 +150,18 @@ describe("createCheckoutSession", () => {
             price_data: expect.objectContaining({ unit_amount: 4999 }),
           }),
         ]),
-      })
+      }),
     );
     expect(url).toBe("https://checkout.stripe.com/pay/cs_test_abc123");
   });
 
   it("persists the order in a transaction on the happy path", async () => {
     vi.mocked(createClient).mockResolvedValue(
-      makeMockSupabase({ id: "user-1" }) as never
+      makeMockSupabase({ id: "user-1" }) as never,
     );
-    vi.mocked(db.select).mockReturnValue(makeSelectChain(MOCK_CART_ITEMS) as never);
+    vi.mocked(db.select).mockReturnValue(
+      makeSelectChain(MOCK_CART_ITEMS) as never,
+    );
     mockSessionsCreate.mockResolvedValue({
       id: "cs_test_abc123",
       url: "https://checkout.stripe.com/pay/cs_test_abc123",
@@ -169,12 +177,17 @@ describe("createCheckoutSession", () => {
     const callOrder: string[] = [];
 
     vi.mocked(createClient).mockResolvedValue(
-      makeMockSupabase({ id: "user-1" }) as never
+      makeMockSupabase({ id: "user-1" }) as never,
     );
-    vi.mocked(db.select).mockReturnValue(makeSelectChain(MOCK_CART_ITEMS) as never);
+    vi.mocked(db.select).mockReturnValue(
+      makeSelectChain(MOCK_CART_ITEMS) as never,
+    );
     mockSessionsCreate.mockImplementation(async () => {
       callOrder.push("stripe");
-      return { id: "cs_test_xyz", url: "https://checkout.stripe.com/pay/cs_test_xyz" };
+      return {
+        id: "cs_test_xyz",
+        url: "https://checkout.stripe.com/pay/cs_test_xyz",
+      };
     });
     mockTransaction.mockImplementation(async () => {
       callOrder.push("transaction");

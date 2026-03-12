@@ -13,22 +13,26 @@ export default function Home() {
         <div className="pointer-events-none absolute inset-0 bg-linear-to-b from-background via-background/60 to-background" />
 
         <div className="relative z-10 flex flex-col items-center gap-6">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">
-            Premium Collection
+          <p className="text-xs font-semibold tracking-[0.2em] text-muted-foreground">
+            מזרנים וכריות מיבואן
           </p>
 
           <h1 className="font-display text-7xl font-normal tracking-tight sm:text-8xl md:text-[10rem] leading-none">
-            Mizronim
+            שינה ישירה
           </h1>
 
           <p className="max-w-md text-base text-muted-foreground sm:text-lg">
-            Refined shopping for a refined taste. Curated products delivered to your door.
+            נוחות אמיתית במחיר יבואן. מזרנים וכריות איכותיים עם משלוח מהיר עד
+            הבית.
           </p>
 
           <div className="flex flex-col items-center gap-3 sm:flex-row">
             <Link href="/products">
-              <Button size="lg" className="min-w-40 rounded-full text-sm tracking-wide">
-                Shop Now
+              <Button
+                size="lg"
+                className="min-w-40 rounded-full text-sm tracking-wide"
+              >
+                לצפייה במוצרים
               </Button>
             </Link>
             <Link href="#features">
@@ -37,7 +41,7 @@ export default function Home() {
                 variant="outline"
                 className="min-w-40 rounded-full text-sm tracking-wide"
               >
-                Learn More
+                למה אנחנו
               </Button>
             </Link>
           </div>
@@ -52,8 +56,8 @@ export default function Home() {
       {/* Feature strip */}
       <section id="features" className="bg-background px-4 py-24">
         <div className="container mx-auto max-w-5xl">
-          <p className="mb-12 text-center text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">
-            Why Mizronim
+          <p className="mb-12 text-center text-xs font-semibold tracking-[0.2em] text-muted-foreground">
+            למה לבחור בשינה ישירה
           </p>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
             <GlassCard className="flex flex-col items-center gap-4 text-center">
@@ -61,9 +65,11 @@ export default function Home() {
                 <Truck className="h-5 w-5 text-muted-foreground" />
               </div>
               <div>
-                <p className="font-semibold tracking-tight">Free Shipping</p>
+                <p className="font-semibold tracking-tight">
+                  משלוח מהיר עד הבית
+                </p>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  On all orders over $50. Fast, reliable delivery worldwide.
+                  אספקה מהירה לכל הארץ, בתיאום מלא ובהתחייבות לשירות אישי.
                 </p>
               </div>
             </GlassCard>
@@ -73,9 +79,9 @@ export default function Home() {
                 <Star className="h-5 w-5 text-muted-foreground" />
               </div>
               <div>
-                <p className="font-semibold tracking-tight">Premium Quality</p>
+                <p className="font-semibold tracking-tight">איכות ללא פשרות</p>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  Every product is handpicked and quality-verified before listing.
+                  מזרנים וכריות מחומרי גלם איכותיים עם בקרת איכות קפדנית.
                 </p>
               </div>
             </GlassCard>
@@ -85,9 +91,9 @@ export default function Home() {
                 <RotateCcw className="h-5 w-5 text-muted-foreground" />
               </div>
               <div>
-                <p className="font-semibold tracking-tight">Easy Returns</p>
+                <p className="font-semibold tracking-tight">100 לילות ניסיון</p>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  30-day hassle-free returns. No questions asked.
+                  התחייבות לנוחות מלאה, החלפה או החזרה בכפוף למדיניות האתר.
                 </p>
               </div>
             </GlassCard>

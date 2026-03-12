@@ -22,12 +22,12 @@ interface ProductsGridProps {
 
 export function ProductsGrid({ products }: ProductsGridProps) {
   const categories = [
-    "All",
+    "הכל",
     ...Array.from(
       new Set(products.map((p) => p.category).filter(Boolean) as string[]),
     ),
   ];
-  const [active, setActive] = useState("All");
+  const [active, setActive] = useState("הכל");
   const [query, setQuery] = useState("");
 
   const q = query.trim().toLowerCase();
@@ -39,24 +39,22 @@ export function ProductsGrid({ products }: ProductsGridProps) {
       )
     : products;
   const filtered =
-    active === "All"
+    active === "הכל"
       ? searchFiltered
       : searchFiltered.filter((p) => p.category === active);
 
   return (
     <div>
-      {/* Search input */}
       <div className="mb-6">
         <Input
           data-testid="search-input"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search products…"
+          placeholder="חיפוש מזרן או כרית..."
           className="max-w-sm"
         />
       </div>
 
-      {/* Category filter tabs */}
       {categories.length > 1 && (
         <div className="mb-8 flex flex-wrap gap-2">
           {categories.map((cat) => (
@@ -64,7 +62,7 @@ export function ProductsGrid({ products }: ProductsGridProps) {
               key={cat}
               onClick={() => setActive(cat)}
               className={cn(
-                "cursor-pointer rounded-full border px-4 py-1.5 text-xs font-semibold uppercase tracking-widest transition-[background-color,color,border-color,transform] duration-200 ease-out hover:-translate-y-0.5",
+                "cursor-pointer rounded-full border px-4 py-1.5 text-xs font-semibold tracking-wide transition-[background-color,color,border-color,transform] duration-200 ease-out hover:-translate-y-0.5",
                 active === cat
                   ? "border-foreground bg-foreground text-background"
                   : "border-border/40 text-muted-foreground hover:border-foreground/40 hover:text-foreground",
@@ -76,7 +74,6 @@ export function ProductsGrid({ products }: ProductsGridProps) {
         </div>
       )}
 
-      {/* Grid */}
       {filtered.length > 0 ? (
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {filtered.map((product, i) => (
@@ -100,8 +97,8 @@ export function ProductsGrid({ products }: ProductsGridProps) {
           <Package className="h-10 w-10 text-muted-foreground/40" />
           <p className="text-muted-foreground">
             {q
-              ? "No products match your search."
-              : "No products in this category yet."}
+              ? "לא נמצאו מוצרים התואמים לחיפוש."
+              : "אין עדיין מוצרים בקטגוריה הזו."}
           </p>
         </div>
       )}

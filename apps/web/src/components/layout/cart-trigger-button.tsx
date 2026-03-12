@@ -18,12 +18,12 @@ export function CartTriggerButton({ initialCount }: CartTriggerButtonProps) {
       type="button"
       onClick={openCart}
       className="relative flex cursor-pointer items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
-      aria-label={`Open cart${count > 0 ? `, ${count} item${count === 1 ? "" : "s"}` : ""}`}
+      aria-label={`פתיחת סל${count > 0 ? `, ${count} פריטים` : ""}`}
     >
       <ShoppingCart className="h-4 w-4" />
-      Cart
+      סל
       {count > 0 && (
-        <span className="absolute -top-2 -right-3 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-primary-foreground text-[10px] font-bold">
+        <span className="absolute -top-2 -left-3 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-primary-foreground text-[10px] font-bold">
           {count}
         </span>
       )}

@@ -12,7 +12,7 @@ test.describe("Responsive behavior", () => {
 
     expect(hasHorizontalOverflow).toBe(false);
     await expect(
-      page.getByRole("button", { name: /open menu/i }),
+      page.getByRole("button", { name: /פתיחת תפריט/i }),
     ).toBeVisible();
   });
 
@@ -21,7 +21,7 @@ test.describe("Responsive behavior", () => {
   }) => {
     await page.goto("/products");
 
-    await expect(page.locator("h1")).toContainText("Our Collection");
+    await expect(page.locator("h1")).toContainText("מזרנים וכריות");
     await expect(page.getByTestId("search-input")).toBeVisible();
 
     const hasHorizontalOverflow = await page.evaluate(() => {

@@ -7,7 +7,8 @@ import { AddToCartButton } from "@/components/features/add-to-cart-button";
 import { formatPrice } from "@/lib/constants";
 import { GlassCard } from "@/components/ui/glass-card";
 import Link from "next/link";
-import { ChevronLeft } from "lucide-react";
+import { ChevronRight } from "lucide-react";
+import { FALLBACK_PRODUCTS } from "@/lib/fallback-products";
 
 export const dynamic = "force-dynamic";
 
@@ -17,10 +18,33 @@ interface Props {
 
 export default async function ProductDetailPage({ params }: Props) {
   const { slug } = await params;
+  let product: Awaited<ReturnType<typeof db.query.products.findFirst>> | null =
+    null;
 
-  const product = await db.query.products.findFirst({
-    where: eq(products.slug, slug),
-  });
+  try {
+    product = await db.query.products.findFirst({
+      where: eq(products.slug, slug),
+    });
+  } catch (error) {
+    console.error(
+      `Failed to load product "${slug}" from DB, using fallback catalog.`,
+      error,
+    );
+  }
+
+  if (!product) {
+    const fallback = FALLBACK_PRODUCTS.find((item) => item.slug === slug);
+    if (fallback) {
+      product = {
+        ...fallback,
+        imageUrl: fallback.imageUrl,
+        category: fallback.category,
+        description: fallback.description,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+    }
+  }
 
   if (!product) notFound();
 
@@ -32,8 +56,8 @@ export default async function ProductDetailPage({ params }: Props) {
         href="/products"
         className="mb-10 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
       >
-        <ChevronLeft className="h-4 w-4" />
-        Back to Products
+        <span>חזרה לקטלוג</span>
+        <ChevronRight className="h-4 w-4" />
       </Link>
 
       <div className="grid grid-cols-1 gap-12 md:grid-cols-2">
@@ -52,7 +76,7 @@ export default async function ProductDetailPage({ params }: Props) {
               />
             ) : (
               <div className="flex h-full w-full items-center justify-center bg-secondary text-secondary-foreground text-sm">
-                No Image
+                אין תמונה
               </div>
             )}
           </div>
@@ -61,7 +85,7 @@ export default async function ProductDetailPage({ params }: Props) {
         {/* Details */}
         <div className="flex flex-col gap-5">
           {product.category && (
-            <span className="w-fit rounded-full border border-border/40 px-3 py-1 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+            <span className="w-fit rounded-full border border-border/40 px-3 py-1 text-xs font-semibold tracking-wide text-muted-foreground">
               {product.category}
             </span>
           )}
@@ -70,10 +94,14 @@ export default async function ProductDetailPage({ params }: Props) {
             {product.name}
           </h1>
 
-          <p className="text-3xl font-semibold tracking-tight">{formatPrice(product.priceInCents)}</p>
+          <p className="text-3xl font-semibold tracking-tight">
+            {formatPrice(product.priceInCents)}
+          </p>
 
           {product.description && (
-            <p className="text-muted-foreground leading-relaxed">{product.description}</p>
+            <p className="text-muted-foreground leading-relaxed">
+              {product.description}
+            </p>
           )}
 
           {/* Stock badge */}
@@ -81,12 +109,12 @@ export default async function ProductDetailPage({ params }: Props) {
             {inStock ? (
               <span className="inline-flex items-center gap-1.5 rounded-full border border-green-500/30 bg-green-500/10 px-3 py-1 text-xs font-medium text-green-600 dark:text-green-400">
                 <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
-                {product.stock} in stock
+                {product.stock} יחידות במלאי
               </span>
             ) : (
               <span className="inline-flex items-center gap-1.5 rounded-full border border-destructive/30 bg-destructive/10 px-3 py-1 text-xs font-medium text-destructive">
                 <span className="h-1.5 w-1.5 rounded-full bg-destructive" />
-                Out of stock
+                אזל מהמלאי
               </span>
             )}
           </div>
@@ -96,7 +124,7 @@ export default async function ProductDetailPage({ params }: Props) {
               <AddToCartButton productId={product.id} />
             ) : (
               <p className="text-center text-sm text-muted-foreground italic">
-                This product is currently unavailable.
+                המוצר אינו זמין כרגע.
               </p>
             )}
           </GlassCard>

@@ -26,7 +26,7 @@ export async function addToCart(
   try {
     const user = await getAuthenticatedUser();
     if (!user)
-      return { success: false, message: "Please sign in to add items to cart" };
+      return { success: false, message: "יש להתחבר כדי להוסיף מוצרים לסל." };
 
     const existing = await db.query.cartItems.findFirst({
       where: and(
@@ -50,10 +50,10 @@ export async function addToCart(
     revalidatePath("/products");
     return {
       success: true,
-      message: existing ? "Cart updated" : "Added to cart",
+      message: existing ? "הסל עודכן בהצלחה." : "המוצר נוסף לסל.",
     };
   } catch {
-    return { success: false, message: "Failed to add to cart" };
+    return { success: false, message: "לא הצלחנו להוסיף את המוצר לסל." };
   }
 }
 
@@ -62,7 +62,7 @@ export async function removeFromCart(productId: string, formData: FormData) {
 
   try {
     const user = await getAuthenticatedUser();
-    if (!user) return { success: false, message: "Please sign in" };
+    if (!user) return { success: false, message: "יש להתחבר כדי לנהל את הסל." };
 
     await db
       .delete(cartItems)
@@ -71,9 +71,9 @@ export async function removeFromCart(productId: string, formData: FormData) {
       );
 
     revalidatePath("/cart");
-    return { success: true, message: "Removed from cart" };
+    return { success: true, message: "המוצר הוסר מהסל." };
   } catch {
-    return { success: false, message: "Failed to remove from cart" };
+    return { success: false, message: "לא הצלחנו להסיר את המוצר מהסל." };
   }
 }
 
@@ -86,7 +86,7 @@ export async function updateCartQuantity(
 
   try {
     const user = await getAuthenticatedUser();
-    if (!user) return { success: false, message: "Please sign in" };
+    if (!user) return { success: false, message: "יש להתחבר כדי לנהל את הסל." };
 
     if (quantity <= 0) {
       await db
@@ -102,9 +102,9 @@ export async function updateCartQuantity(
     revalidatePath("/cart");
     return {
       success: true,
-      message: quantity <= 0 ? "Item removed" : "Quantity updated",
+      message: quantity <= 0 ? "המוצר הוסר מהסל." : "הכמות עודכנה בהצלחה.",
     };
   } catch {
-    return { success: false, message: "Failed to update quantity" };
+    return { success: false, message: "לא הצלחנו לעדכן את הכמות." };
   }
 }

@@ -14,16 +14,24 @@ export function Footer() {
 
           {/* Shop */}
           <div className="space-y-3">
-            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Shop</p>
+            <p className="text-xs font-semibold tracking-widest text-muted-foreground">
+              חנות
+            </p>
             <ul className="space-y-2">
               <li>
-                <Link href="/products" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  Products
+                <Link
+                  href="/products"
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  מוצרים
                 </Link>
               </li>
               <li>
-                <Link href="/cart" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  Cart
+                <Link
+                  href="/cart"
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  סל
                 </Link>
               </li>
             </ul>
@@ -31,16 +39,24 @@ export function Footer() {
 
           {/* Account */}
           <div className="space-y-3">
-            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Account</p>
+            <p className="text-xs font-semibold tracking-widest text-muted-foreground">
+              חשבון
+            </p>
             <ul className="space-y-2">
               <li>
-                <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  Sign In
+                <Link
+                  href="/login"
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  התחברות
                 </Link>
               </li>
               <li>
-                <Link href="/dashboard" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  Dashboard
+                <Link
+                  href="/dashboard"
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  החשבון שלי
                 </Link>
               </li>
             </ul>
@@ -50,9 +66,11 @@ export function Footer() {
         {/* Bottom bar */}
         <div className="mt-12 border-t border-border/40 pt-6 flex flex-col sm:flex-row items-center justify-between gap-2">
           <p className="text-xs text-muted-foreground">
-            &copy; {new Date().getFullYear()} {SITE_NAME}. All rights reserved.
+            &copy; {new Date().getFullYear()} {SITE_NAME}. כל הזכויות שמורות.
           </p>
-          <p className="text-xs text-muted-foreground">Built with Next.js</p>
+          <p className="text-xs text-muted-foreground">
+            אתר מכירת מזרנים וכריות מיבואן
+          </p>
         </div>
       </div>
     </footer>

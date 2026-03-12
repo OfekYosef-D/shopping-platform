@@ -2,13 +2,21 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import * as schema from "./schema";
 
+const POSTGRES_OPTIONS = {
+  // Supabase transaction poolers are sensitive to prepared statements.
+  prepare: false,
+  // Keep the pool intentionally small for serverless/dev hot-reload workloads.
+  max: 1,
+  connect_timeout: 10,
+  idle_timeout: 20,
+} as const;
+
 function createDb() {
   const connectionString = process.env.DATABASE_URL;
   if (!connectionString) {
     throw new Error("DATABASE_URL is not set");
   }
-  // Disable prefetch for Supabase Transaction pool mode
-  const client = postgres(connectionString, { prepare: false });
+  const client = postgres(connectionString, POSTGRES_OPTIONS);
   return drizzle({ client, schema });
 }
 
