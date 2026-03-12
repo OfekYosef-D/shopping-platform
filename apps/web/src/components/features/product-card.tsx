@@ -16,11 +16,23 @@ interface ProductCardProps {
   className?: string;
 }
 
-export function ProductCard({ id, name, slug, priceInCents, imageUrl, category, index = 0, className }: ProductCardProps) {
+export function ProductCard({
+  id,
+  name,
+  slug,
+  priceInCents,
+  imageUrl,
+  category,
+  index = 0,
+  className,
+}: ProductCardProps) {
   return (
     <GlassCard
       data-testid="product-card"
-      className={cn("group flex flex-col p-4 transition-all hover:shadow-2xl", className)}
+      className={cn(
+        "group flex flex-col p-4 transition-[transform,box-shadow] duration-200 ease-out hover:-translate-y-0.5 hover:shadow-xl",
+        className,
+      )}
       style={{ animationDelay: `${index * 60}ms` }}
     >
       <Link href={`/products/${slug}`} className="block flex-1">
@@ -36,7 +48,7 @@ export function ProductCard({ id, name, slug, priceInCents, imageUrl, category, 
               alt={name}
               fill
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              className="object-cover transition-transform duration-500 group-hover:scale-105"
+              className="object-cover transition-transform duration-300 ease-out will-change-transform group-hover:scale-105"
               placeholder="blur"
               blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
             />

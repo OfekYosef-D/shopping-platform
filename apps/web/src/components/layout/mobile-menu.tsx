@@ -50,7 +50,7 @@ export function MobileMenu({ user, initialCount }: MobileMenuProps) {
           <button
             type="button"
             onClick={() => { closeMobileMenu(); openCart(); }}
-            className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+            className="flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           >
             <ShoppingCart className="h-4 w-4" />
             Cart

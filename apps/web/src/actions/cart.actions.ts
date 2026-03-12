@@ -17,15 +17,22 @@ async function getAuthenticatedUser() {
 export async function addToCart(
   productId: string,
   quantity: number,
-  _prevState: unknown,
-  _formData: FormData
+  prevState: unknown,
+  formData: FormData,
 ) {
+  void prevState;
+  void formData;
+
   try {
     const user = await getAuthenticatedUser();
-    if (!user) return { success: false, message: "Please sign in to add items to cart" };
+    if (!user)
+      return { success: false, message: "Please sign in to add items to cart" };
 
     const existing = await db.query.cartItems.findFirst({
-      where: and(eq(cartItems.userId, user.id), eq(cartItems.productId, productId)),
+      where: and(
+        eq(cartItems.userId, user.id),
+        eq(cartItems.productId, productId),
+      ),
     });
 
     if (existing) {
@@ -34,32 +41,38 @@ export async function addToCart(
         .set({ quantity: existing.quantity + quantity })
         .where(eq(cartItems.id, existing.id));
     } else {
-      await db.insert(cartItems).values({ userId: user.id, productId, quantity });
+      await db
+        .insert(cartItems)
+        .values({ userId: user.id, productId, quantity });
     }
 
     revalidatePath("/cart");
     revalidatePath("/products");
-    return { success: true, message: existing ? "Cart updated" : "Added to cart" };
-  } catch (_error) {
+    return {
+      success: true,
+      message: existing ? "Cart updated" : "Added to cart",
+    };
+  } catch {
     return { success: false, message: "Failed to add to cart" };
   }
 }
 
-export async function removeFromCart(
-  productId: string,
-  _formData: FormData
-) {
+export async function removeFromCart(productId: string, formData: FormData) {
+  void formData;
+
   try {
     const user = await getAuthenticatedUser();
     if (!user) return { success: false, message: "Please sign in" };
 
     await db
       .delete(cartItems)
-      .where(and(eq(cartItems.userId, user.id), eq(cartItems.productId, productId)));
+      .where(
+        and(eq(cartItems.userId, user.id), eq(cartItems.productId, productId)),
+      );
 
     revalidatePath("/cart");
     return { success: true, message: "Removed from cart" };
-  } catch (_error) {
+  } catch {
     return { success: false, message: "Failed to remove from cart" };
   }
 }
@@ -67,8 +80,10 @@ export async function removeFromCart(
 export async function updateCartQuantity(
   itemId: string,
   quantity: number,
-  _formData: FormData
+  formData: FormData,
 ) {
+  void formData;
+
   try {
     const user = await getAuthenticatedUser();
     if (!user) return { success: false, message: "Please sign in" };
@@ -85,8 +100,11 @@ export async function updateCartQuantity(
     }
 
     revalidatePath("/cart");
-    return { success: true, message: quantity <= 0 ? "Item removed" : "Quantity updated" };
-  } catch (_error) {
+    return {
+      success: true,
+      message: quantity <= 0 ? "Item removed" : "Quantity updated",
+    };
+  } catch {
     return { success: false, message: "Failed to update quantity" };
   }
 }

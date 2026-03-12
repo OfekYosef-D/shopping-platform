@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useOptimistic, useEffect, useRef } from "react";
+import { useActionState, useEffect, useRef } from "react";
 import { addToCart } from "@/actions/cart.actions";
 import { Button } from "@/components/ui/button";
 import { Loader2, Plus } from "lucide-react";
@@ -20,37 +20,27 @@ export function AddToCartButton({ productId }: AddToCartButtonProps) {
     message: "",
   });
 
-  const [optimisticState, addOptimistic] = useOptimistic(
-    { isAdding: false },
-    (_state, newIsAdding: boolean) => ({ isAdding: newIsAdding })
-  );
-
-  const isAdding = isPending || optimisticState.isAdding;
-
-  // Track previous state to detect a fresh success transition
-  const prevSuccessRef = useRef(false);
+  const wasPendingRef = useRef(false);
   useEffect(() => {
-    if (state.success && !prevSuccessRef.current) {
-      toast.success("Added to cart!");
-      queryClient.invalidateQueries({ queryKey: ["cart"] });
+    if (wasPendingRef.current && !isPending) {
+      if (state.success) {
+        toast.success("Added to cart!");
+        queryClient.invalidateQueries({ queryKey: ["cart"] });
+      } else if (state.message) {
+        toast.error(state.message);
+      }
     }
-    prevSuccessRef.current = state.success;
-  }, [state.success, queryClient]);
+    wasPendingRef.current = isPending;
+  }, [isPending, state.success, state.message, queryClient]);
 
   return (
-    <form
-      action={(formData) => {
-        addOptimistic(true);
-        formAction(formData);
-      }}
-      className="mt-4 w-full"
-    >
+    <form action={formAction} className="mt-4 w-full">
       <Button
         type="submit"
-        disabled={isAdding}
-        className="w-full border border-black/10 bg-black/5 text-foreground backdrop-blur-md hover:bg-black/10 dark:border-white/20 dark:bg-white/10 dark:hover:bg-white/20 transition-all duration-300 shadow-sm"
+        disabled={isPending}
+        className="w-full border border-black/10 bg-black/5 text-foreground shadow-sm transition-[background-color,transform,box-shadow] duration-200 ease-out hover:-translate-y-0.5 hover:bg-black/10 hover:shadow-md dark:border-white/20 dark:bg-white/10 dark:hover:bg-white/20"
       >
-        {isAdding ? (
+        {isPending ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             Adding...
@@ -63,7 +53,9 @@ export function AddToCartButton({ productId }: AddToCartButtonProps) {
         )}
       </Button>
       {state?.message && !state.success && (
-        <p className="text-destructive text-xs mt-2 text-center">{state.message}</p>
+        <p className="text-destructive text-xs mt-2 text-center">
+          {state.message}
+        </p>
       )}
     </form>
   );

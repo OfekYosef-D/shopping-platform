@@ -1,9 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 
-// ──────────────────────────────────────────────────────────
-// Mocks
-// ──────────────────────────────────────────────────────────
+const mockCloseCart = vi.fn();
+const mockInvalidateQueries = vi.fn();
+const mockUpdateCartQuantity = vi.fn();
+const mockRemoveFromCart = vi.fn();
+
 vi.mock("@/stores/ui-store", () => ({
   useUIStore: vi.fn(),
 }));
@@ -13,12 +15,26 @@ vi.mock("@/hooks/use-cart-query", () => ({
 }));
 
 vi.mock("@/actions/cart.actions", () => ({
-  removeFromCart: vi.fn(),
-  updateCartQuantity: vi.fn(),
+  removeFromCart: (...args: unknown[]) => mockRemoveFromCart(...args),
+  updateCartQuantity: (...args: unknown[]) => mockUpdateCartQuantity(...args),
 }));
 
+vi.mock("@tanstack/react-query", async () => {
+  const actual = await vi.importActual<typeof import("@tanstack/react-query")>(
+    "@tanstack/react-query",
+  );
+  return {
+    ...actual,
+    useQueryClient: vi.fn(() => ({
+      invalidateQueries: mockInvalidateQueries,
+    })),
+  };
+});
+
 vi.mock("motion/react", () => ({
-  AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  AnimatePresence: ({ children }: { children: React.ReactNode }) => (
+    <>{children}</>
+  ),
   motion: {
     div: ({ children, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
       <div {...props}>{children}</div>
@@ -29,11 +45,6 @@ vi.mock("motion/react", () => ({
 import { CartDrawer } from "../cart-drawer";
 import { useUIStore } from "@/stores/ui-store";
 import { useCartQuery } from "@/hooks/use-cart-query";
-
-// ──────────────────────────────────────────────────────────
-// Helpers
-// ──────────────────────────────────────────────────────────
-const mockCloseCart = vi.fn();
 
 function setStore(isCartOpen: boolean) {
   vi.mocked(useUIStore).mockReturnValue({
@@ -54,12 +65,17 @@ const MOCK_ITEMS = [
   },
 ];
 
-// ──────────────────────────────────────────────────────────
-// Tests
-// ──────────────────────────────────────────────────────────
 describe("CartDrawer", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockUpdateCartQuantity.mockResolvedValue({
+      success: true,
+      message: "Quantity updated",
+    });
+    mockRemoveFromCart.mockResolvedValue({
+      success: true,
+      message: "Removed from cart",
+    });
   });
 
   it("renders nothing when isCartOpen is false", () => {
@@ -149,5 +165,52 @@ describe("CartDrawer", () => {
     fireEvent.click(screen.getByTestId("cart-close"));
 
     expect(mockCloseCart).toHaveBeenCalledOnce();
+  });
+
+  it("updates quantity and refreshes cart cache when increase is clicked", async () => {
+    setStore(true);
+    vi.mocked(useCartQuery).mockReturnValue({
+      data: { items: MOCK_ITEMS, total: 5998 },
+      isLoading: false,
+    } as never);
+
+    render(<CartDrawer />);
+    fireEvent.click(screen.getByRole("button", { name: /increase quantity/i }));
+
+    await waitFor(() => {
+      expect(mockUpdateCartQuantity).toHaveBeenCalledWith(
+        "ci-1",
+        3,
+        expect.any(FormData),
+      );
+    });
+    await waitFor(() => {
+      expect(mockInvalidateQueries).toHaveBeenCalledWith({
+        queryKey: ["cart"],
+      });
+    });
+  });
+
+  it("removes an item and refreshes cart cache when remove is clicked", async () => {
+    setStore(true);
+    vi.mocked(useCartQuery).mockReturnValue({
+      data: { items: MOCK_ITEMS, total: 5998 },
+      isLoading: false,
+    } as never);
+
+    render(<CartDrawer />);
+    fireEvent.click(screen.getByTestId("drawer-remove"));
+
+    await waitFor(() => {
+      expect(mockRemoveFromCart).toHaveBeenCalledWith(
+        "prod-1",
+        expect.any(FormData),
+      );
+    });
+    await waitFor(() => {
+      expect(mockInvalidateQueries).toHaveBeenCalledWith({
+        queryKey: ["cart"],
+      });
+    });
   });
 });

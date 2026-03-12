@@ -21,7 +21,12 @@ interface ProductsGridProps {
 }
 
 export function ProductsGrid({ products }: ProductsGridProps) {
-  const categories = ["All", ...Array.from(new Set(products.map((p) => p.category).filter(Boolean) as string[]))];
+  const categories = [
+    "All",
+    ...Array.from(
+      new Set(products.map((p) => p.category).filter(Boolean) as string[]),
+    ),
+  ];
   const [active, setActive] = useState("All");
   const [query, setQuery] = useState("");
 
@@ -30,10 +35,13 @@ export function ProductsGrid({ products }: ProductsGridProps) {
     ? products.filter(
         (p) =>
           p.name.toLowerCase().includes(q) ||
-          (p.description ?? "").toLowerCase().includes(q)
+          (p.description ?? "").toLowerCase().includes(q),
       )
     : products;
-  const filtered = active === "All" ? searchFiltered : searchFiltered.filter((p) => p.category === active);
+  const filtered =
+    active === "All"
+      ? searchFiltered
+      : searchFiltered.filter((p) => p.category === active);
 
   return (
     <div>
@@ -56,10 +64,10 @@ export function ProductsGrid({ products }: ProductsGridProps) {
               key={cat}
               onClick={() => setActive(cat)}
               className={cn(
-                "rounded-full border px-4 py-1.5 text-xs font-semibold uppercase tracking-widest transition-colors",
+                "cursor-pointer rounded-full border px-4 py-1.5 text-xs font-semibold uppercase tracking-widest transition-[background-color,color,border-color,transform] duration-200 ease-out hover:-translate-y-0.5",
                 active === cat
                   ? "border-foreground bg-foreground text-background"
-                  : "border-border/40 text-muted-foreground hover:border-foreground/40 hover:text-foreground"
+                  : "border-border/40 text-muted-foreground hover:border-foreground/40 hover:text-foreground",
               )}
             >
               {cat}
@@ -85,10 +93,15 @@ export function ProductsGrid({ products }: ProductsGridProps) {
           ))}
         </div>
       ) : (
-        <div data-testid="empty-state" className="flex flex-col items-center justify-center gap-4 py-24 text-center">
+        <div
+          data-testid="empty-state"
+          className="flex flex-col items-center justify-center gap-4 py-24 text-center"
+        >
           <Package className="h-10 w-10 text-muted-foreground/40" />
           <p className="text-muted-foreground">
-            {q ? "No products match your search." : "No products in this category yet."}
+            {q
+              ? "No products match your search."
+              : "No products in this category yet."}
           </p>
         </div>
       )}

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { render, screen, getAllByRole } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { ProductCard } from "@/components/features/product-card";
 
 vi.mock("@/actions/cart.actions", () => ({

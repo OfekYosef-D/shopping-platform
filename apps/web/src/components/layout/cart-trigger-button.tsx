@@ -17,7 +17,7 @@ export function CartTriggerButton({ initialCount }: CartTriggerButtonProps) {
     <button
       type="button"
       onClick={openCart}
-      className="relative flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+      className="relative flex cursor-pointer items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
       aria-label={`Open cart${count > 0 ? `, ${count} item${count === 1 ? "" : "s"}` : ""}`}
     >
       <ShoppingCart className="h-4 w-4" />

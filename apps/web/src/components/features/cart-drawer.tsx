@@ -4,18 +4,48 @@ import { AnimatePresence, motion } from "motion/react";
 import { X, ShoppingCart, Package, Minus, Plus } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useTransition, useState } from "react";
 import { useUIStore } from "@/stores/ui-store";
 import { useCartQuery } from "@/hooks/use-cart-query";
 import { removeFromCart, updateCartQuantity } from "@/actions/cart.actions";
 import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/lib/constants";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 export function CartDrawer() {
   const { isCartOpen, closeCart } = useUIStore();
   const { data, isLoading } = useCartQuery();
+  const queryClient = useQueryClient();
+  const [activeMutationKey, setActiveMutationKey] = useState<string | null>(
+    null,
+  );
+  const [isMutating, startMutation] = useTransition();
 
   const items = data?.items ?? [];
   const total = data?.total ?? 0;
+
+  function runCartMutation(
+    mutationKey: string,
+    mutation: () => Promise<{ success: boolean; message: string }>,
+  ) {
+    if (isMutating) return;
+    setActiveMutationKey(mutationKey);
+
+    startMutation(async () => {
+      try {
+        const result = await mutation();
+        if (!result.success) {
+          toast.error(result.message || "Unable to update cart");
+        }
+      } catch {
+        toast.error("Unable to update cart");
+      } finally {
+        await queryClient.invalidateQueries({ queryKey: ["cart"] });
+        setActiveMutationKey(null);
+      }
+    });
+  }
 
   return (
     <AnimatePresence>
@@ -40,7 +70,7 @@ export function CartDrawer() {
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            transition={{ type: "spring", stiffness: 240, damping: 28 }}
             className="fixed inset-y-0 right-0 z-50 flex w-full max-w-sm flex-col border-l border-border/40 bg-background/95 backdrop-blur-xl shadow-2xl"
             data-testid="cart-drawer"
           >
@@ -70,7 +100,11 @@ export function CartDrawer() {
             {/* Body */}
             <div className="flex-1 overflow-y-auto px-4 py-4">
               {isLoading ? (
-                <div className="space-y-4" aria-busy="true" data-testid="cart-loading">
+                <div
+                  className="space-y-4"
+                  aria-busy="true"
+                  data-testid="cart-loading"
+                >
                   {[1, 2, 3].map((n) => (
                     <div key={n} className="flex animate-pulse gap-3">
                       <div className="h-16 w-16 shrink-0 rounded-lg bg-muted" />
@@ -87,7 +121,9 @@ export function CartDrawer() {
                   data-testid="cart-empty"
                 >
                   <Package className="h-12 w-12 text-muted-foreground/40" />
-                  <p className="text-sm text-muted-foreground">Your cart is empty</p>
+                  <p className="text-sm text-muted-foreground">
+                    Your cart is empty
+                  </p>
                   <Button
                     variant="outline"
                     size="sm"
@@ -146,21 +182,26 @@ export function CartDrawer() {
 
                           {/* Quantity controls + remove */}
                           <div className="flex items-center gap-2">
-                            <form
-                              action={updateCartQuantity.bind(
-                                null,
-                                item.id,
-                                item.quantity - 1
-                              )}
+                            <button
+                              type="button"
+                              className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border border-border/40 transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
+                              aria-label="Decrease quantity"
+                              disabled={
+                                isMutating &&
+                                activeMutationKey === `qty:${item.id}`
+                              }
+                              onClick={() =>
+                                runCartMutation(`qty:${item.id}`, () =>
+                                  updateCartQuantity(
+                                    item.id,
+                                    item.quantity - 1,
+                                    new FormData(),
+                                  ),
+                                )
+                              }
                             >
-                              <button
-                                type="submit"
-                                className="flex h-6 w-6 items-center justify-center rounded-full border border-border/40 transition-colors hover:bg-muted"
-                                aria-label="Decrease quantity"
-                              >
-                                <Minus className="h-3 w-3" />
-                              </button>
-                            </form>
+                              <Minus className="h-3 w-3" />
+                            </button>
 
                             <span
                               className="min-w-[1.5rem] text-center text-sm font-medium tabular-nums"
@@ -169,34 +210,46 @@ export function CartDrawer() {
                               {item.quantity}
                             </span>
 
-                            <form
-                              action={updateCartQuantity.bind(
-                                null,
-                                item.id,
-                                item.quantity + 1
-                              )}
+                            <button
+                              type="button"
+                              className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border border-border/40 transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
+                              aria-label="Increase quantity"
+                              disabled={
+                                isMutating &&
+                                activeMutationKey === `qty:${item.id}`
+                              }
+                              onClick={() =>
+                                runCartMutation(`qty:${item.id}`, () =>
+                                  updateCartQuantity(
+                                    item.id,
+                                    item.quantity + 1,
+                                    new FormData(),
+                                  ),
+                                )
+                              }
                             >
-                              <button
-                                type="submit"
-                                className="flex h-6 w-6 items-center justify-center rounded-full border border-border/40 transition-colors hover:bg-muted"
-                                aria-label="Increase quantity"
-                              >
-                                <Plus className="h-3 w-3" />
-                              </button>
-                            </form>
+                              <Plus className="h-3 w-3" />
+                            </button>
 
-                            <form
-                              action={removeFromCart.bind(null, item.productId)}
-                              className="ml-auto"
+                            <button
+                              type="button"
+                              className="ml-auto cursor-pointer text-xs text-muted-foreground transition-colors hover:text-destructive disabled:cursor-not-allowed disabled:opacity-50"
+                              data-testid="drawer-remove"
+                              disabled={
+                                isMutating &&
+                                activeMutationKey === `remove:${item.id}`
+                              }
+                              onClick={() =>
+                                runCartMutation(`remove:${item.id}`, () =>
+                                  removeFromCart(
+                                    item.productId,
+                                    new FormData(),
+                                  ),
+                                )
+                              }
                             >
-                              <button
-                                type="submit"
-                                className="text-xs text-muted-foreground transition-colors hover:text-destructive"
-                                data-testid="drawer-remove"
-                              >
-                                Remove
-                              </button>
-                            </form>
+                              Remove
+                            </button>
                           </div>
                         </div>
 
@@ -205,7 +258,7 @@ export function CartDrawer() {
                           {formatPrice(item.priceInCents * item.quantity)}
                         </span>
                       </li>
-                    )
+                    ),
                   )}
                 </ul>
               )}
@@ -215,11 +268,19 @@ export function CartDrawer() {
             {items.length > 0 && (
               <div className="space-y-3 border-t border-border/40 px-6 py-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Subtotal</span>
-                  <span className="font-semibold tabular-nums">{formatPrice(total)}</span>
+                  <span className="text-sm text-muted-foreground">
+                    Subtotal
+                  </span>
+                  <span className="font-semibold tabular-nums">
+                    {formatPrice(total)}
+                  </span>
                 </div>
                 <div className="flex flex-col gap-2">
-                  <Button className="w-full rounded-full" asChild onClick={closeCart}>
+                  <Button
+                    className="w-full rounded-full"
+                    asChild
+                    onClick={closeCart}
+                  >
                     <Link href="/checkout">Checkout</Link>
                   </Button>
                   <Button
